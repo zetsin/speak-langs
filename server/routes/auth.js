@@ -10,16 +10,21 @@ router.get('/google', passport.authenticate('google', {
 }))
 
 router.get('/google/oauth2callback', (req, res, next) => {
-  if(!process.env.NODE_ENV && req.header('Referer') === process.env.dev_client) {
+  if(req.header('Referer') === process.env.dev_client && req.header('Host') !== url.parse(process.env.dev_client_server).host) {
     res.redirect(url.resolve(process.env.dev_client_server, req.originalUrl))
   }
   else {
     next()
   }
 }, passport.authenticate('google', {
-  failureRedirect: '/'
+  failureRedirect: '/xxx'
 }), (req, res) => {
-  res.redirect('/')
+  if(req.header('Host') === url.parse(process.env.dev_client_server).host) {
+    res.redirect(process.env.dev_client)
+  }
+  else {
+    res.redirect('/')
+  }
 })
 
 module.exports = router

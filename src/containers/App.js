@@ -1,3 +1,5 @@
+import url from 'url'
+
 import React from 'react'
 import { connect } from 'react-redux'
 import { Switch, Route, Redirect } from 'react-router'
@@ -60,7 +62,7 @@ class Comp extends React.Component {
   componentDidMount() {
     const { dispatch } = this.props
 
-    sio('/io')
+    sio(url.resolve(process.env.NODE_ENV === 'production' ? '' : process.env.REACT_APP_DEV_SERVER, '/io'))
     .on('error', error => {
       console.log(error)
       if(error === '401') {
