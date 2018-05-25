@@ -11,6 +11,9 @@ module.exports = app => {
   .on('connect', socket => {
     socket.emit('session', socket.request.session)
   })
+  .on('test', socket => {
+    socket.emit('test', socket.request.session)
+  })
 
   return io
 }

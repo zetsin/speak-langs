@@ -61,6 +61,7 @@ class Comp extends React.Component {
     socket.on('session', (data) => {
       console.log(data)
     })
+    window.socket = socket
   }
 }
 
