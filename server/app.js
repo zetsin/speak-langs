@@ -8,7 +8,8 @@ const logger = require('morgan')
 const debug = require('debug')('play2talk:app')
 const passport = require('passport')
 const GoogleStrategy = require('passport-google-oauth').OAuth2Strategy
-const routes = require('routes')
+const routes = require('./routes')
+const io = require('./io')
 
 const app = express()
 
@@ -31,11 +32,6 @@ passport.deserializeUser((obj, cb) => cb(null, obj))
 app.use(passport.initialize())
 app.use(passport.session())
 
-// test
-app.get('/', (req, res, next) => {
-  res.json(req.user)
-})
-
 // routes
 Object.keys(routes).forEach(key => app.use(`/${key}`, routes[key]))
 
@@ -49,6 +45,10 @@ app.use(function(err, req, res, next) {
   debug(err)
   res.status(err.status || 500)
   res.json(err)
+})
+
+app.on('listening', () => {
+  io(app.get('server'))
 })
 
 module.exports = app

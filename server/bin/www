@@ -21,6 +21,7 @@ app.set('port', port);
  */
 
 var server = http.createServer(app);
+app.set('server', server)
 
 /**
  * Listen on provided port, on all network interfaces.
@@ -78,6 +79,8 @@ function onError(error) {
     default:
       throw error;
   }
+  
+  app.emit('error', error)
 }
 
 /**
@@ -90,4 +93,6 @@ function onListening() {
     ? 'pipe ' + addr
     : 'port ' + addr.port;
   debug('Listening on ' + bind);
+
+  app.emit('listening')
 }

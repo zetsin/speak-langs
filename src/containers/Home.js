@@ -101,14 +101,14 @@ class Comp extends React.Component {
   }
 
   render() {
-    const { classes } = this.props
+    const { classes, user } = this.props
     const { anchorEl } = this.state
 
     const drawer = (
       <React.Fragment>
         <Toolbar>
           <Typography variant="title" align="center" className={classes.placeholder} noWrap>
-            Play to Talk
+            Speak Langs
           </Typography>
         </Toolbar>
         <Divider />
@@ -154,9 +154,10 @@ class Comp extends React.Component {
             <Typography variant="title" className={classes.placeholder} noWrap>
               Responsive drawer
             </Typography>
-            <IconButton onClick={this.handleMenu} color="inherit">
+            <Button onClick={this.handleMenu} color={user.id ? "primary" : "secondary"}>
+              {user.id ? user.displayName : "Login"}
               <AccountCircle />
-            </IconButton>
+            </Button>
             <Menu
               anchorEl={anchorEl}
               anchorOrigin={{
