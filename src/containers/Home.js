@@ -172,8 +172,8 @@ class Comp extends React.Component {
               open={!!anchorEl}
               onClose={this.handleClose}
             >
-              <MenuItem onClick={this.handleClose} component="a" href="/auth/google">Google</MenuItem>
-              <MenuItem onClick={this.handleClose} component="a" href="./auth/google">Logout</MenuItem>
+              <MenuItem onClick={this.handleClose} component="a" href={`${process.env.REACT_APP_DEV_SERVER}/auth/google`}>Google</MenuItem>
+              <MenuItem onClick={this.handleClose} component="a" href="">Logout</MenuItem>
             </Menu>
           </Toolbar>
         </AppBar>

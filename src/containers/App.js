@@ -63,8 +63,7 @@ class Comp extends React.Component {
     sio('/io')
     .on('error', error => {
       console.log(error)
-      if(error === 401) {
-        console.log('error === 401')
+      if(error === '401') {
         dispatch(User.update({id: 0}))
       }
     })
