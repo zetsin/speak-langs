@@ -1,5 +1,6 @@
 import React from 'react'
 import { connect } from 'react-redux'
+import { Link } from 'react-router-dom'
 
 import { withStyles } from '@material-ui/core/styles'
 import {
@@ -172,7 +173,7 @@ class Comp extends React.Component {
               open={!!anchorEl}
               onClose={this.handleClose}
             >
-              <MenuItem onClick={this.handleClose}>Login</MenuItem>
+              <MenuItem onClick={this.handleClose} component={Link} to="/auth/google">Google</MenuItem>
               <MenuItem onClick={this.handleClose}>Logout</MenuItem>
             </Menu>
           </Toolbar>
