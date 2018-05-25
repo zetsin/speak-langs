@@ -29,6 +29,11 @@ passport.deserializeUser((obj, cb) => cb(null, obj))
 app.use(passport.initialize())
 app.use(passport.session())
 
+// test
+app.get('/', (req, res, next) => {
+  res.json(req.user)
+})
+
 // routes
 Object.keys(routes).forEach(key => app.use(`/${key}`, routes[key]))
 
