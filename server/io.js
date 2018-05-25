@@ -9,7 +9,7 @@ module.exports = app => {
     if(socket.request.session.passport) {
       socket.user = socket.request.session.passport.user
     }
-    return socket.user ? next() : next(createError(401, 'Authentication error'))
+    return socket.user ? next() : next(createError(401, '401'))
   })
   .on('connect', socket => {
     socket.emit('user', socket.user)
