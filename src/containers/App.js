@@ -14,7 +14,7 @@ import blue from '@material-ui/core/colors/blue'
 
 import Home from 'containers/Home'
 
-import { App } from 'stores'
+import { App, User } from 'stores'
 
 const theme = createMuiTheme({
   palette: {
@@ -58,11 +58,13 @@ class Comp extends React.Component {
   }
 
   componentDidMount() {
+    const { dispatch } = this.props
+
     const socket = sio('/io')
-    socket.on('session', (data) => {
-      console.log(data)
+    socket.on('user', user => {
+      console.log(user)
+      dispatch(User.update(user))
     })
-    window.socket = socket
   }
 }
 

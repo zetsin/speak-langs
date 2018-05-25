@@ -6,13 +6,13 @@ module.exports = app => {
 
   io.of('/io')
   .use((socket, next) => {
-    return socket.request.session ? next() : next(createError(401, 'Authentication error'))
+    if(socket.request.session.passport) {
+      socket.user = socket.request.session.passport
+    }
+    return socket.user ? next() : next(createError(401, 'Authentication error'))
   })
   .on('connect', socket => {
-    socket.emit('session', socket.request.session)
-  })
-  .on('test', socket => {
-    socket.emit('test', socket.request.session)
+    socket.emit('user', socket.user)
   })
 
   return io
