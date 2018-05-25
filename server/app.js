@@ -24,6 +24,8 @@ passport.use(new GoogleStrategy({
 }, (token, tokenSecret, profile, cb) => {
   cb(null, profile)
 }))
+passport.serializeUser((user, cb) => cb(null, user))
+passport.deserializeUser((obj, cb) => cb(null, obj))
 app.use(passport.initialize())
 app.use(passport.session())
 
