@@ -1,7 +1,9 @@
 require('app-module-path').addPath(__dirname)
+const path = require('path')
+const url = require('url')
+
 const createError = require('http-errors')
 const express = require('express')
-const path = require('path')
 const cookieParser = require('cookie-parser')
 const session = require('express-session')
 const logger = require('morgan')
@@ -28,7 +30,7 @@ app.use(express.static(path.join(__dirname, '../build')))
 passport.use(new GoogleStrategy({
   clientID: process.env.google_clientID,
   clientSecret: process.env.google_clientSecret,
-  callbackURL: path.join(process.env.homepage, process.env.google_callbackURL)
+  callbackURL: url.resolve(process.env.homepage, process.env.google_callbackURL)
 }, (token, tokenSecret, profile, cb) => {
   cb(null, profile)
 }))
