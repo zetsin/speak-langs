@@ -1,13 +1,16 @@
-const io = require('socket.io')
+const sio = require('socket.io')
 const createError = require('http-errors')
 
 module.exports = app => {
-  io(app)
-  .of('io')
+  const io = sio(app)
+
+  io.of('/io')
   .use((socket, next) => {
-    return socket.request.user ? next() : next(createError(401, 'Authentication error'))
+    return socket.request.session ? next() : next(createError(401, 'Authentication error'))
   })
   .on('connect', socket => {
-    socket.emit('user', socket.request.user)
+    socket.emit('session', socket.request.session)
   })
+
+  return io
 }

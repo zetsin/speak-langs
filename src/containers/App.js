@@ -2,6 +2,7 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { Switch, Route, Redirect } from 'react-router'
 import { HashRouter } from 'react-router-dom'
+import sio from 'socket.io-client'
 
 import 'typeface-roboto'
 import { MuiThemeProvider, createMuiTheme, withStyles } from '@material-ui/core/styles'
@@ -53,6 +54,13 @@ class Comp extends React.Component {
         </HashRouter>
       </MuiThemeProvider>
     )
+  }
+
+  componentDidMount() {
+    const socket = sio('/io')
+    socket.on('session', (data) => {
+      console.log(data)
+    })
   }
 }
 

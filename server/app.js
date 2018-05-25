@@ -12,12 +12,17 @@ const routes = require('./routes')
 const io = require('./io')
 
 const app = express()
+const sessionMiddleware = session({
+  secret: 'zetsin',
+  resave: true,
+  saveUninitialized: true
+})
 
 app.use(logger('dev'))
 app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
 app.use(cookieParser())
-app.use(session({ secret: 'zetsin', resave: true, saveUninitialized: true }))
+app.use(sessionMiddleware)
 app.use(express.static(path.join(__dirname, '../build')))
 
 passport.use(new GoogleStrategy({
@@ -49,6 +54,7 @@ app.use(function(err, req, res, next) {
 
 app.on('listening', () => {
   io(app.get('server'))
+  .use((socket, next) => sessionMiddleware(socket.request, socket.request.res, next))
 })
 
 module.exports = app
