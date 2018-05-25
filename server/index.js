@@ -4,7 +4,8 @@ const child = new (forever.Monitor)('bin/www', {
   uid: 'app',
   append: true,
   watch: true,
-  sourceDir: __dirname
+  sourceDir: __dirname,
+  watchIgnoreDotFiles: false,
 })
 
 child.on('exit', function () {
