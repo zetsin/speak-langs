@@ -7,7 +7,7 @@ export default {
       const { dispatch } = this
 
       dispatch({
-        type: 'app/save',
+        type: 'user/save',
         payload: data
       })
     },
