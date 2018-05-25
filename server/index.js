@@ -6,7 +6,7 @@ const child = new (forever.Monitor)('bin/www', {
   watch: true,
   sourceDir: __dirname,
   env: {
-    PORT: 8080,
+    PORT: process.env.PORT || 8080,
     DEBUG: 'play2talk:*'
   }
 })
