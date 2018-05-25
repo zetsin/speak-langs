@@ -8,7 +8,7 @@ router.get('/google', passport.authenticate('google', {
 }))
 
 router.get('/google/oauth2callback', passport.authenticate('google', {
-  failureRedirect: '/login'
+  failureRedirect: '/'
 }), (req, res) => {
   res.redirect('/')
 })
