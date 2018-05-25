@@ -7,7 +7,7 @@ module.exports = app => {
   io.of('/io')
   .use((socket, next) => {
     if(socket.request.session.passport) {
-      socket.user = socket.request.session.passport
+      socket.user = socket.request.session.passport.user
     }
     return socket.user ? next() : next(createError(401, 'Authentication error'))
   })
