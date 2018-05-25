@@ -60,8 +60,11 @@ class Comp extends React.Component {
   componentDidMount() {
     const { dispatch } = this.props
 
-    const socket = sio('/io')
-    socket.on('user', user => {
+    sio('/io')
+    .on('error', error => {
+      console.log(error)
+    })
+    .on('user', user => {
       console.log(user)
       dispatch(User.update(user))
     })
