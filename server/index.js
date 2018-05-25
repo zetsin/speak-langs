@@ -4,11 +4,7 @@ const child = new (forever.Monitor)('bin/www', {
   uid: 'app',
   append: true,
   watch: true,
-  sourceDir: __dirname,
-  env: {
-    PORT: process.env.PORT || 8080,
-    DEBUG: 'play2talk:*'
-  }
+  sourceDir: __dirname
 })
 
 child.on('exit', function () {

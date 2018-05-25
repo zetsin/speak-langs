@@ -3,6 +3,8 @@
 /**
  * Module dependencies.
  */
+require('dotenv').config()
+
 var app = require('../app');
 var debug = require('debug')('play2talk:server');
 var http = require('http');

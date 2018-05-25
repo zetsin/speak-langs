@@ -4,6 +4,7 @@ const express = require('express')
 const path = require('path')
 const cookieParser = require('cookie-parser')
 const logger = require('morgan')
+const debug = require('debug')('play2talk:app')
 const passport = require('passport')
 const GoogleStrategy = require('passport-google-oauth').OAuth2Strategy
 const routes = require('routes')
@@ -17,11 +18,11 @@ app.use(cookieParser())
 app.use(express.static(path.join(__dirname, '../build')))
 
 passport.use(new GoogleStrategy({
-  clientID: '694979748654-1392htm8kp8osuk0m6tbghg432hctldt.apps.googleusercontent.com',
-  clientSecret: '9RtD7-YzfeD8HUvBy0zXHfqb',
-  callbackURL: "http://www.example.com/auth/google/callback"
+  clientID: process.env.google_clientID,
+  clientSecret: process.env.google_clientSecret,
+  callbackURL: process.env.google_callbackURL
 }, (token, tokenSecret, profile, done) => {
-  console.log(token, tokenSecret, profile)
+  debug(token, tokenSecret, profile)
 }))
 app.use(passport.initialize())
 app.use(passport.session())
