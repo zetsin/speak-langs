@@ -1,7 +1,7 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { Switch, Route, Redirect } from 'react-router'
-import { HashRouter } from 'react-router-dom'
+import { HashRouter, BrowserRouter } from 'react-router-dom'
 import sio from 'socket.io-client'
 
 import 'typeface-roboto'
@@ -41,17 +41,18 @@ class Comp extends React.Component {
 
   render() {
     const { classes, app } = this.props
+    const RootRouter = window.location.href.indexOf('#') >= 0 ? HashRouter : BrowserRouter
 
     return (
       <MuiThemeProvider theme={theme}>
         <CssBaseline />
         <Snackbar anchorOrigin={{vertical: 'top', horizontal: 'center'}} ContentProps={{classes}} open={!!app.message} onClose={this.handleClose} message={app.message} />
-        <HashRouter>
+        <RootRouter>
           <Switch>
             <Route path="/" component={Home} exact />
             <Redirect to="/" /> 
           </Switch>
-        </HashRouter>
+        </RootRouter>
       </MuiThemeProvider>
     )
   }
