@@ -21,7 +21,10 @@ passport.use(new GoogleStrategy({
   clientID: process.env.google_clientID,
   clientSecret: process.env.google_clientSecret,
   callbackURL: process.env.google_callbackURL
-}, (token, tokenSecret, profile, done) => done(null, profile)))
+}, (token, tokenSecret, profile, done) => {
+  debug(token, tokenSecret, profile)
+  done(null, profile)
+}))
 app.use(passport.initialize())
 app.use(passport.session())
 
