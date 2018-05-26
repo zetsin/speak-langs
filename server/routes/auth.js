@@ -12,9 +12,9 @@ router.get('/google', passport.authenticate('google', {
 router.get('/google/oauth2callback', (req, res, next) => {
   if(url.parse(req.get('referer')).host === process.env.dev_client_host && req.get('host') !== process.env.dev_client_server_host) {
     res.redirect(url.format({
+      ...url.parse(req.originalUrl),
       protocol: 'http',
       host: process.env.dev_client_server_host,
-      path: req.originalUrl
     }).toString())
   }
   else {
