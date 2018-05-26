@@ -6,6 +6,7 @@ const createError = require('http-errors')
 const express = require('express')
 const cookieParser = require('cookie-parser')
 const session = require('express-session')
+const store = require('session-file-store')
 const logger = require('morgan')
 const debug = require('debug')('play2talk:app')
 const passport = require('passport')
@@ -15,6 +16,7 @@ const io = require('./io')
 
 const app = express()
 const sessionMiddleware = session({
+  store: store(session)(),
   secret: 'zetsin',
   resave: true,
   saveUninitialized: true

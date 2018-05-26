@@ -19,12 +19,12 @@ router.get('/google/oauth2callback', (req, res, next) => {
 }, passport.authenticate('google', {
   failureRedirect: '/'
 }), (req, res) => {
-  res.redirect(req.get('referer'))
+  res.redirect(req.get('referer') || '/')
 })
 
 router.get('/logout', (req, res) => {
   req.logout()
-  res.redirect(req.get('referer'))
+  res.redirect(req.get('referer') || '/')
 })
 
 module.exports = router
