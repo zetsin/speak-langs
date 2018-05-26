@@ -57,8 +57,7 @@ app.use(function(err, req, res, next) {
 })
 
 app.on('listening', () => {
-  io(app.get('server'))
-  .use((socket, next) => sessionMiddleware(socket.request, socket.request.res, next))
+  io(app).use((socket, next) => sessionMiddleware(socket.request, socket.request.res, next))
 })
 
 module.exports = app

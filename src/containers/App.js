@@ -1,10 +1,7 @@
-import url from 'url'
-
 import React from 'react'
 import { connect } from 'react-redux'
 import { Switch, Route, Redirect } from 'react-router'
 import { BrowserRouter } from 'react-router-dom'
-import sio from 'socket.io-client'
 
 import 'typeface-roboto'
 import { MuiThemeProvider, createMuiTheme, withStyles } from '@material-ui/core/styles'
@@ -16,7 +13,7 @@ import blue from '@material-ui/core/colors/blue'
 
 import Home from 'containers/Home'
 
-import { App, User } from 'stores'
+import { App } from 'stores'
 
 const theme = createMuiTheme({
   palette: {
@@ -50,28 +47,17 @@ class Comp extends React.Component {
         <Snackbar anchorOrigin={{vertical: 'top', horizontal: 'center'}} ContentProps={{classes}} open={!!app.message} onClose={this.handleClose} message={app.message} />
         <BrowserRouter>
           <Switch>
-            <Route path="/" component={Home} exact />
-            <Redirect to="/" /> 
+            <Route path="/:room" component={Home} exact />
+            <Redirect to="/general" /> 
           </Switch>
         </BrowserRouter>
       </MuiThemeProvider>
     )
   }
 
-  componentDidMount() {
+  componentWillMount() {
     const { dispatch } = this.props
-
-    sio(url.resolve(process.env.NODE_ENV === 'production' ? '' : process.env.REACT_APP_DEV_SERVER, '/io'))
-    .on('error', error => {
-      console.log(error)
-      if(error === '401') {
-        dispatch(User.update({id: 0}))
-      }
-    })
-    .on('user', user => {
-      console.log(user)
-      dispatch(User.update(user))
-    })
+    dispatch(App.connect())
   }
 }
 

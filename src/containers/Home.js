@@ -28,11 +28,13 @@ import {
   MenuItem
 } from '@material-ui/core'
 import {
-  More,
   Face,
   Add,
   AccountCircle
 } from '@material-ui/icons'
+import MenuIcon from '@material-ui/icons/Menu'
+
+import { Rooms } from 'stores'
 
 const drawerWidth = 320
 
@@ -56,6 +58,13 @@ const styles = theme => ({
       width: drawerWidth
     },
     background: '#fdfdfd',
+  },
+  list: {
+    flex: 1,
+    overflow: 'scroll',
+  },
+  selected: {
+    background: '#ccc'
   },
   main: {
     padding: theme.spacing.unit * 3,
@@ -96,13 +105,26 @@ class Comp extends React.Component {
     this.setState({ anchorEl: event.currentTarget });
   }
 
-  handleClose = () => {
+  handleClose = event => {
     this.setState({ anchorEl: null });
   }
 
+  handleCreateRoom = event => {
+    const { dispatch } = this.props
+    dispatch(Rooms.create())
+  }
+  handleChangeRoom = id => event => {
+    const { dispatch, history, match } = this.props
+    dispatch(Rooms.getout(match.params.room))
+    dispatch(Rooms.gointo(id))
+    history.push(id)
+  }
+
   render() {
-    const { classes, user } = this.props
+    const { classes, user, rooms, match } = this.props
     const { anchorEl } = this.state
+
+    const room = rooms[match.params.room] || {}
 
     const drawer = (
       <React.Fragment>
@@ -117,26 +139,34 @@ class Comp extends React.Component {
         }} inputProps={{
           className: classes.center
         }} />
-        <List className={classes.placeholder}>
-          <ListItem button>
-            <ListItemAvatar>
-              <Avatar>G</Avatar>
-            </ListItemAvatar>
-            <ListItemText disableTypography primary={
-              <Tooltip title="Add">
-                <Typography variant="subheading" noWrap>Sent mail, Sent mail, Sent mail, Sent mail, Sent mail, Sent mail, Sent mail,</Typography>
-              </Tooltip>
-            } />
-            <ListItemSecondaryAction>
-              <ListItemIcon>
-                <Badge badgeContent={666} color="primary">
-                  <Face />
-                </Badge>
-              </ListItemIcon>
-            </ListItemSecondaryAction>
-          </ListItem>
+        <List className={classes.list}>
+          {Object.keys(rooms).map((key, index) => (
+            <ListItem
+              key={index}
+              button
+              color="primary"
+              className={match.params.room === key ? classes.selected : ''}
+              onClick={this.handleChangeRoom(key)}
+            >
+              <ListItemAvatar>
+                <Avatar>G</Avatar>
+              </ListItemAvatar>
+              <ListItemText disableTypography primary={
+                <Tooltip title={rooms[key].name || ''}>
+                  <Typography variant="subheading" noWrap>{rooms[key].name}</Typography>
+                </Tooltip>
+              } />
+              <ListItemSecondaryAction>
+                <ListItemIcon>
+                  <Badge badgeContent={rooms[key].length} color="primary">
+                    <Face />
+                  </Badge>
+                </ListItemIcon>
+              </ListItemSecondaryAction>
+            </ListItem>
+          ))}
         </List>
-        <Button variant="raised" color="primary" size="small" fullWidth>
+        <Button variant="raised" color="primary" size="small" fullWidth onClick={this.handleCreateRoom}>
           <Add />
         </Button>
       </React.Fragment>
@@ -148,11 +178,11 @@ class Comp extends React.Component {
           <Toolbar>
             <Hidden mdUp>
               <IconButton color="inherit" onClick={this.handleDrawerToggle}>
-                <More />
+                <MenuIcon />
               </IconButton>
             </Hidden>
             <Typography variant="title" className={classes.placeholder} noWrap>
-              Responsive drawer
+              {room.name}
             </Typography>
             <Button onClick={this.handleMenu} color={user.id ? "primary" : "secondary"}>
               {user.id ? user.displayName : "Login"}
@@ -221,6 +251,11 @@ class Comp extends React.Component {
         </footer>
       </div>
     )
+  }
+
+  componentDidMount() {
+    const { dispatch, match } = this.props
+    dispatch(Rooms.gointo(match.params.room))
   }
 }
 
