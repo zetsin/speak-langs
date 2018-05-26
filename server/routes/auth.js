@@ -14,7 +14,7 @@ router.get('/google/oauth2callback', (req, res, next) => {
     res.redirect(url.format({
       protocol: 'http',
       host: process.env.dev_client_server_host,
-      pathname: req.originalUrl
+      path: req.originalUrl
     }).toString())
   }
   else {
