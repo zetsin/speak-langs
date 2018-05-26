@@ -15,7 +15,7 @@ router.get('/google/oauth2callback', (req, res, next) => {
       protocol: 'http',
       host: process.env.dev_client_server_host,
       pathname: req.originalUrl
-    }.toString()))
+    }).toString())
   }
   else {
     next()
