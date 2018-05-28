@@ -79,6 +79,10 @@ module.exports = app => {
     })
     socket.on('+room', room => {
       const id = Math.random().toString(32).slice(2)
+      room = {
+        ...room,
+        datetime: Date.now()
+      }
       socket.join(id, () => {
         stores.rooms.setItem(id, room)
         nsp.emit('rooms', {

@@ -12,7 +12,8 @@ const rooms = persist.create({
 rooms.init()
 .then(() => {
   rooms.setItem('general', {
-    name: '# general'
+    name: '# general',
+    datetime: Date.now()
   })
 })
 .catch(debug)

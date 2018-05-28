@@ -35,7 +35,7 @@ app.use(express.static(path.join(__dirname, '../build')))
 passport.use(new GoogleStrategy({
   clientID: process.env.google_clientID || 'clientID',
   clientSecret: process.env.google_clientSecret || 'clientSecret',
-  callbackURL: url.resolve(process.env.homepage || '', process.env.google_callbackURL || '')
+  callbackURL: process.env.google_callbackURL || '',
 }, (token, tokenSecret, profile, cb) => {
   cb(null, profile)
 }))

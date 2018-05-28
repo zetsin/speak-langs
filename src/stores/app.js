@@ -11,7 +11,7 @@ export default {
   actions: {
     connect: function() {
       const { dispatch } = this
-      const io = window.io = sio(url.resolve(process.env.NODE_ENV === 'production' ? '' : process.env.REACT_APP_DEV_SERVER, '/io'))
+      const io = window.io = sio(url.resolve(process.env.REACT_APP_SERVER, '/io'))
       io.on('error', err => {
         console.log(err)
         dispatch(User.update({

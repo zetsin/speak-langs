@@ -24,7 +24,8 @@
     "start": "react-app-rewired start",
     "build": "react-app-rewired build",
     "test": "react-app-rewired test --env=jsdom",
-    "serve": "node server",
+    "serve": "cd server && npm start",
+    "serve:dev": "cd server && npm run start:dev",
     "postinstall": "cd server && npm install"
   }
 }

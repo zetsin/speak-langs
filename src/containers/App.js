@@ -66,4 +66,7 @@ class Comp extends React.Component {
   }
 }
 
-export default withStyles(styles)(connect(state => state)(Comp))
+export default withStyles(styles)(connect(state => {
+  const { app } =  state
+  return { app }
+})(Comp))
