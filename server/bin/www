@@ -3,26 +3,6 @@
 /**
  * Module dependencies.
  */
-
-var fs = require('fs')
-var path = require('path')
-var dotenv = path.resolve(__dirname, '../.env')
-var NODE_ENV = process.env.NODE_ENV || 'development'
-var dotenvFiles = [
-  `${dotenv}.${NODE_ENV}.local`,
-  `${dotenv}.${NODE_ENV}`,
-  NODE_ENV !== 'test' && `${dotenv}.local`,
-  dotenv,
-].forEach(dotenvFile => {
-  if (fs.existsSync(dotenvFile)) {
-    require('dotenv-expand')(
-      require('dotenv').config({
-        path: dotenvFile,
-      })
-    )
-  }
-})
-
 var app = require('../app');
 var debug = require('debug')('speak-langs:server');
 var http = require('http');
