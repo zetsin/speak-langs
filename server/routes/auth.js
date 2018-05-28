@@ -27,7 +27,7 @@ router.get('/google/oauth2callback', (req, res, next) => {
 })
 
 router.get('/logout', (req, res) => {
-  console.log(req.app.get('env'))
+  console.log(process.env.dev_client_host)
   req.logout()
   res.redirect(req.get('referer') || '/')
 })

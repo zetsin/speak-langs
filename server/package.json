@@ -3,13 +3,12 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "cross-env NODE_ENV=production node index",
-    "start:dev": "cross-env NODE_ENV=development node index"
+    "start": "node -r dotenv/config index dotenv_config_path=.env.production",
+    "start:dev": "node -r dotenv/config index dotenv_config_path=.env.development"
   },
   "dependencies": {
     "app-module-path": "^2.2.0",
     "cookie-parser": "~1.4.3",
-    "cross-env": "^5.1.6",
     "debug": "~2.6.9",
     "dotenv": "^5.0.1",
     "dotenv-expand": "^4.2.0",
