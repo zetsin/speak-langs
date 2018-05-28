@@ -11,9 +11,14 @@ const rooms = persist.create({
 })
 rooms.init()
 .then(() => {
-  rooms.setItem('general', {
-    name: '# general',
-    datetime: Date.now()
+  rooms.getItem('general')
+  .then(room => {
+    if(!room) {
+      rooms.setItem('general', {
+        name: '# general',
+        datetime: Date.now()
+      })
+    }
   })
 })
 .catch(debug)
