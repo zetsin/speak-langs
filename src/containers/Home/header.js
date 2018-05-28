@@ -82,11 +82,11 @@ class Comp extends React.Component {
               <Avatar component={Button} variant="fab">G</Avatar>
             </ListItemAvatar>
             <ListItemText disableTypography className={classes.pointer} onClick={this.handleAsiderOpen} primary={
-              <Tooltip title={room.name}>
+              <Tooltip title={room.name || ''}>
                 <Typography variant="title" noWrap>{room.name ? `${room.name} (${Object.keys(group).length})` : ''}</Typography>
               </Tooltip>
             } secondary={
-              <Tooltip title={room.topic}>
+              <Tooltip title={room.topic || ''}>
                 <Typography variant="caption" noWrap>{room.topic}</Typography>
               </Tooltip>
             } />
