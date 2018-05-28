@@ -11,7 +11,7 @@ const store = createStore(
   persistReducer({
     key: 'root',
     storage,
-    whitelist: ['users', 'messages', 'texts' ],
+    whitelist: ['app', 'users', 'messages', 'texts'],
   }, combineReducers({
     ...stores,
   })),

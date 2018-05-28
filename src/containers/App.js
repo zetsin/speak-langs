@@ -9,13 +9,18 @@ import {
   CssBaseline,
   Snackbar,
 } from '@material-ui/core'
+import {
+  grey
+} from '@material-ui/core/colors'
 
 import Home from 'containers/Home'
 
 import { App, Rooms } from 'stores'
 
+const type = 'light'
 const theme = createMuiTheme({
   palette: {
+    type,
     primary: {
       main: '#1FB922',
     },
@@ -23,7 +28,7 @@ const theme = createMuiTheme({
       main: '#F13838',
     },
     background: {
-      default: '#f3f3f3'
+      default: grey[type === 'dark' ? 900 : 100],
     },
   },
 })

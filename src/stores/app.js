@@ -6,6 +6,10 @@ import { App, User, Users, Rooms, Groups, Messages } from 'stores'
 export default {
   state: {
     message: '',
+    search: '',
+    sider_open: false,
+    asider_open: false,
+    dialog_open: false,
   },
 
   actions: {

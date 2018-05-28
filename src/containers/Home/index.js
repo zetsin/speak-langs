@@ -9,8 +9,9 @@ import {
 
 import Sider from './sider'
 import Header from './header'
-import Main from './main'
+import Mainer from './mainer'
 import Footer from './footer'
+import Asider from './asider'
 
 import { Rooms } from 'stores'
 
@@ -20,12 +21,9 @@ const styles = theme => console.log(theme) || ({
     height: '100vh',
   },
 
-  item: {
-    flex: 1,
-    overflow: 'hidden'
-  },
   container: {
-    height: '100%'
+    height: '100%',
+    flex: 1,
   },
 
   main: {
@@ -42,17 +40,20 @@ class Comp extends React.Component {
     return (
       <Grid container className={classes.root}>
         <Route component={Sider} />
-        <Grid item className={classes.item}>
-          <Grid container direction="column" className={classes.container}>
-            <Grid item>
-              <Route component={Header} />
+        <Grid item container direction="column" className={classes.container}>
+          <Grid item>
+            <Route component={Header} />
+          </Grid>
+          <Grid item container className={classes.container}>
+            <Grid item container direction="column" className={classes.container}>
+              <Grid item className={classes.main}>
+                <Route component={Mainer} />
+              </Grid>
+              <Grid item>
+                <Route component={Footer} />
+              </Grid>
             </Grid>
-            <Grid item className={classes.main}>
-              <Route component={Main} />
-            </Grid>
-            <Grid item>
-              <Route component={Footer} />
-            </Grid>
+            <Route component={Asider} />
           </Grid>
         </Grid>
       </Grid>
