@@ -3,20 +3,11 @@ export default {
   },
 
   actions: {
-    create: function(opts={}) {
-      window.io.emit('+room', opts)
-    },
-    join: function(id) {
-      window.io.emit('>room', id)
-    },
-    leave: function(id) {
-      window.io.emit('<room', id)
-    },
     update: function(data={}) {
       const { dispatch } = this
 
       dispatch({
-        type: 'rooms/save',
+        type: 'texts/save',
         payload: data
       })
     },
@@ -28,6 +19,6 @@ export default {
         ...state,
         ...payload
       }
-    },
+    }
   }
 }

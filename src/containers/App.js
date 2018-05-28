@@ -9,15 +9,19 @@ import {
   CssBaseline,
   Snackbar,
 } from '@material-ui/core'
-import blue from '@material-ui/core/colors/blue'
 
 import Home from 'containers/Home'
 
-import { App } from 'stores'
+import { App, Rooms } from 'stores'
 
 const theme = createMuiTheme({
   palette: {
-    primary: blue,
+    primary: {
+      main: '#1FB922',
+    },
+    secondary: {
+      main: '#F13838',
+    },
     background: {
       default: '#f3f3f3'
     },
@@ -44,7 +48,7 @@ class Comp extends React.Component {
     return (
       <MuiThemeProvider theme={theme}>
         <CssBaseline />
-        <Snackbar anchorOrigin={{vertical: 'top', horizontal: 'center'}} ContentProps={{classes}} open={!!app.message} onClose={this.handleClose} message={app.message} />
+        <Snackbar anchorOrigin={{vertical: 'bottom', horizontal: 'center'}} ContentProps={{classes}} open={!!app.message} onClose={this.handleClose} message={`${app.message}`} />
         <BrowserRouter>
           <Switch>
             <Route path="/:room" component={Home} exact />
@@ -58,6 +62,7 @@ class Comp extends React.Component {
   componentWillMount() {
     const { dispatch } = this.props
     dispatch(App.connect())
+    dispatch(Rooms.join('general'))
   }
 }
 

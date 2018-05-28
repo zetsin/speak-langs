@@ -1,100 +1,137 @@
+const debug = require('debug')('speak-langs:io')
 const sio = require('socket.io')
 const createError = require('http-errors')
-
-class Rooms {
-  constructor(nsp) {
-    this.nsp = nsp
-    this.rooms = {}
-    this.add({
-      name: '# general'
-    }, {
-      id: 'general'
-    })
-    this.add({
-      name: '# random'
-    }, {
-      id: 'random'
-    })
-  }
-  all() {
-    Object.keys(this.rooms).map(id => {
-      this.rooms[id].length = this.nsp.adapter.rooms[id] ? this.nsp.adapter.rooms[id].length : 0
-    })
-    return this.rooms
-  }
-  add(props={}, ext={}) {
-    const id = ext.id || Math.random().toString(32).slice(2)
-    this.rooms[id] = {
-      ...props,
-      length: 0,
-      ext,
-    }
-    return id
-  }
-  get(id) {
-    const room = this.rooms[id]
-    if(room) {
-      room.length = this.nsp.adapter.rooms[id] ? this.nsp.adapter.rooms[id].length : 0
-      return {
-        ...room,
-        ext: undefined,
-      }
-    }
-  }
-}
+const persist = require('node-persist')
+const fs = require('fs')
+const stores = require('./stores')
 
 module.exports = app => {
   const io = sio(app.get('server'))
   const nsp = io.of('/io')
-  const rooms = new Rooms(nsp)
+
+  const auth = ['>message']
 
   nsp.use((socket, next) => {
-    console.log(socket.request.session)
-    if(socket.request.session && socket.request.session.passport) {
-      socket.user = socket.request.session.passport.user
+    const passport = socket.request.session.passport
+    if(passport && passport.user) {
+      stores.users.getItem(passport.user.id)
+      .then(user => {
+        socket.user = user
+        next()
+      })
+      .catch(next)
     }
-    return socket.user ? next() : next(new Error('401'))
+    else {
+      next()
+    }
   })
   nsp.on('connection', socket => {
+    socket.emit('user', socket.user)
+    Promise.all([stores.rooms.keys(), stores.rooms.values()])
+    .then(([keys, values]) => {
+      socket.emit('rooms', keys.reduce((pre, cur, index) => {
+        return {
+          ...pre,
+          [cur]: values[index]
+        }
+      }, {}))
+      
+      Promise.all(keys.map((key, index) => new Promise((resolve, reject) => {
+        nsp.in(key).clients((err, clients) => err ? reject(err) : resolve({
+          [key]: clients.reduce((pre, cur) => {
+            return {
+              ...pre,
+              [cur]: 0
+            }
+          }, {})
+        }))
+      })))
+      .then(groups => {
+        socket.emit('groups', groups.reduce((pre, cur) => {
+          return {
+            ...pre,
+            ...cur
+          }
+        }, {}))
+      })
+      .catch(debug)
+      
+    })
+    .catch(debug)
+
     socket.use((packet, next) => {
-      // if (packet.doge === true) return next();
-      // next(new Error('Not a doge error'));
-      console.log(socket.user)
+      if(auth.includes(packet[0])) {
+        if(!socket.user) {
+          return next(createError(401, 'UNAUTHORIZED'))
+        }
+      }
       next()
     })
 
-    if(socket.user) {
-      socket.emit('user', socket.user)
-    }
-    socket.emit('rooms', rooms.all())
-
-    socket.on('+room', props => {
-      const id = rooms.add(props)
+    socket.on('<user', id => {
+      stores.users.getItem(id)
+      .then(user => {
+        socket.emit('users', {
+          [id]: user
+        })
+      })
+      .catch(debug)
+    })
+    socket.on('+room', room => {
+      const id = Math.random().toString(32).slice(2)
       socket.join(id, () => {
+        stores.rooms.setItem(id, room)
         nsp.emit('rooms', {
-          [id]: rooms.get(id)
+          [id]: room
         })
       })
     })
     socket.on('>room', id => {
-      const room = rooms.get(id)
-      if(room) {
+      stores.rooms.getItem(id)
+      .then(room => {
         socket.join(id, () => {
-          nsp.emit('rooms', {
-            [id]: rooms.get(id)
+          nsp.emit('groups', {
+            [id]: {
+              [socket.id]: socket.user ? socket.user.id : 0
+            }
           })
+        })
+      })
+      .catch(debug)
+    })
+    socket.on('<room', id => {
+      stores.rooms.getItem(id)
+      .then(room => {
+        socket.leave(id, () => {
+          nsp.emit('groups', {
+            [id]: {
+              [socket.id]: null
+            }
+          })
+        })
+      })
+      .catch(debug)
+    })
+    socket.on('>message', (room, data) => {
+      if(Object.keys(socket.rooms).includes(room)) {
+        nsp.to(room).emit('messages', {
+          [room]: {
+            [Math.random().toString(32).slice(2)]: {
+              uid: socket.user.id,
+              data
+            }
+          }
         })
       }
     })
-    socket.on('<room', id => {
-      const room = rooms.get(id)
-      if(room) {
-        socket.leave(id, () => {
-          nsp.emit('rooms', {
-            [id]: rooms.get(id)
-          })
-        })
-      }
+    socket.on('disconnecting', (reason) => {
+      const groups = {}
+      Object.keys(socket.rooms).map(room => {
+        groups[room] = {
+          [socket.id]: null
+        }
+      })
+      nsp.emit('groups', groups)
     })
   })
 

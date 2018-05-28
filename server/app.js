@@ -6,17 +6,20 @@ const createError = require('http-errors')
 const express = require('express')
 const cookieParser = require('cookie-parser')
 const session = require('express-session')
-const store = require('session-file-store')
+const store = require('session-file-store')(session)
 const logger = require('morgan')
-const debug = require('debug')('play2talk:app')
+const debug = require('debug')('speak-langs:app')
 const passport = require('passport')
 const GoogleStrategy = require('passport-google-oauth').OAuth2Strategy
 const routes = require('./routes')
 const io = require('./io')
+const stores = require('./stores') 
 
 const app = express()
 const sessionMiddleware = session({
-  store: store(session)(),
+  store: new store({
+    path: '.node-persist/sessions'
+  }),
   secret: 'zetsin',
   resave: true,
   saveUninitialized: true
@@ -30,14 +33,25 @@ app.use(sessionMiddleware)
 app.use(express.static(path.join(__dirname, '../build')))
 
 passport.use(new GoogleStrategy({
-  clientID: process.env.google_clientID,
-  clientSecret: process.env.google_clientSecret,
-  callbackURL: url.resolve(process.env.homepage, process.env.google_callbackURL)
+  clientID: process.env.google_clientID || 'clientID',
+  clientSecret: process.env.google_clientSecret || 'clientSecret',
+  callbackURL: url.resolve(process.env.homepage || '', process.env.google_callbackURL || '')
 }, (token, tokenSecret, profile, cb) => {
   cb(null, profile)
 }))
-passport.serializeUser((user, cb) => cb(null, user))
-passport.deserializeUser((obj, cb) => cb(null, obj))
+passport.serializeUser((user, cb) => {
+  stores.users.setItem(user.id, user)
+  cb(null, {
+    id: user.id
+  })
+})
+passport.deserializeUser((user, cb) => {
+  stores.users.getItem(user.id)
+  .then(user => {
+    cb(null, user)
+  })
+  .catch(debug)
+})
 app.use(passport.initialize())
 app.use(passport.session())
 
@@ -59,5 +73,4 @@ app.use(function(err, req, res, next) {
 app.on('listening', () => {
   io(app).use((socket, next) => sessionMiddleware(socket.request, socket.request.res, next))
 })
-
 module.exports = app

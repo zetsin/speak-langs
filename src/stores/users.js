@@ -3,11 +3,18 @@ export default {
   },
 
   actions: {
+    get: function(id, force) {
+      const { getState } = this
+
+      if(id && (force || !getState().users[id])) {
+        window.io.emit('<user', id)
+      }
+    },
     update: function(user={}) {
       const { dispatch } = this
 
       dispatch({
-        type: 'user/save',
+        type: 'users/save',
         payload: user
       })
     },

@@ -1,0 +1,23 @@
+const debug = require('debug')('speak-langs:stores')
+const persist = require('node-persist')
+
+const users = persist.create({
+  dir: '.node-persist/users'
+})
+users.init().catch(debug)
+
+const rooms = persist.create({
+  dir: '.node-persist/rooms'
+})
+rooms.init()
+.then(() => {
+  rooms.setItem('general', {
+    name: '# general'
+  })
+})
+.catch(debug)
+
+module.exports = {
+  users,
+  rooms,
+}

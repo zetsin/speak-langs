@@ -3,7 +3,11 @@
 /**
  * Module dependencies.
  */
-require('dotenv').config()
+
+var path = require('path')
+require('dotenv').config({
+  path: path.resolve(__dirname, '../.env')
+})
 
 var app = require('../app');
 var debug = require('debug')('speak-langs:server');

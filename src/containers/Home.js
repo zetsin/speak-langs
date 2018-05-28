@@ -1,5 +1,6 @@
 import React from 'react'
 import { connect } from 'react-redux'
+import classNames from 'classnames'
 
 import { withStyles } from '@material-ui/core/styles'
 import {
@@ -34,20 +35,16 @@ import {
 } from '@material-ui/icons'
 import MenuIcon from '@material-ui/icons/Menu'
 
-import { Rooms } from 'stores'
+import { Rooms, Messages, Texts } from 'stores'
 
 const drawerWidth = 320
 
-const styles = theme => ({
-  root: {
-    position: 'relative',
-    minHeight: '100vh',
-    [theme.breakpoints.up('md')]: {
-      marginLeft: drawerWidth
-    }
-  },
+const styles = theme => console.log(theme) || ({
   header: {
     borderBottom: '1px solid #e2e2e2',
+    [theme.breakpoints.up('md')]: {
+      paddingLeft: drawerWidth
+    },
   },
   sider: {
     width: '80%',
@@ -59,6 +56,23 @@ const styles = theme => ({
     },
     background: '#fdfdfd',
   },
+  main: {
+    [theme.breakpoints.up('md')]: {
+      paddingLeft: drawerWidth
+    },
+  },
+  footer: {
+    position: 'fixed',
+    left: 0,
+    right: 0,
+    bottom: 0,
+    borderTop: '1px solid #e2e2e2',
+    [theme.breakpoints.up('md')]: {
+      paddingLeft: drawerWidth
+    },
+    background: theme.palette.background.default,
+    zIndex: theme.zIndex.appBar,
+  },
   list: {
     flex: 1,
     overflow: 'scroll',
@@ -66,17 +80,11 @@ const styles = theme => ({
   selected: {
     background: '#ccc'
   },
-  main: {
-    padding: theme.spacing.unit * 3,
-  },
-  footer: {
-    position: 'absolute',
-    width: '100%',
-    bottom: 0,
-    borderTop: '1px solid #e2e2e2',
-  },
   paper: {
     padding: 10,
+  },
+  paper_bg: {
+    background: '#A2E563',
   },
   input: {
     '&:before, &:after': {
@@ -109,22 +117,56 @@ class Comp extends React.Component {
     this.setState({ anchorEl: null });
   }
 
-  handleCreateRoom = event => {
+  handleRoomCreate = event => {
     const { dispatch } = this.props
     dispatch(Rooms.create())
   }
-  handleChangeRoom = id => event => {
+  handleRoomChange = id => event => {
     const { dispatch, history, match } = this.props
-    dispatch(Rooms.getout(match.params.room))
-    dispatch(Rooms.gointo(id))
+    const room = match.params.room
+    if(room !== 'general' && room !== 'random') {
+      console.log('out')
+      dispatch(Rooms.leave(room))
+    }
+    dispatch(Rooms.join(id))
     history.push(id)
   }
 
+  handleTextChange = event => {
+    const { dispatch, match } = this.props
+    dispatch(Texts.update({
+      [match.params.room]: event.target.value
+    }))
+  }
+  handleKeyPress = event => {
+    const { dispatch, match } = this.props
+    if(event.key === 'Enter') {
+      dispatch(Messages.send(match.params.room, event.target.value))
+      dispatch(Texts.update({
+        [match.params.room]: ''
+      }))
+      event.preventDefault()
+    }
+  }
+
   render() {
-    const { classes, user, rooms, match } = this.props
+    const { classes, match, user, users, rooms, texts, groups, messages } = this.props
     const { anchorEl } = this.state
 
-    const room = rooms[match.params.room] || {}
+    const timespan = 1000 * 60 * 10
+    const rid = match.params.room
+    const room = rooms[rid] || {}
+    const conversation = Object.values(messages[rid] || {}).reduce((pre, cur) => {
+      const time = parseInt(cur.datetime / timespan, 10)
+      return {
+        ...pre,
+        [time]: [
+          ...(pre[time] || []),
+          cur,
+        ]
+      }
+    }, {})
+    const speak = texts[rid] || ''
 
     const drawer = (
       <React.Fragment>
@@ -145,20 +187,24 @@ class Comp extends React.Component {
               key={index}
               button
               color="primary"
-              className={match.params.room === key ? classes.selected : ''}
-              onClick={this.handleChangeRoom(key)}
+              className={rid === key ? classes.selected : ''}
+              onClick={this.handleRoomChange(key)}
             >
               <ListItemAvatar>
                 <Avatar>G</Avatar>
               </ListItemAvatar>
               <ListItemText disableTypography primary={
                 <Tooltip title={rooms[key].name || ''}>
-                  <Typography variant="subheading" noWrap>{rooms[key].name}</Typography>
+                  <Typography variant="title" noWrap>{rooms[key].name}</Typography>
+                </Tooltip>
+              } secondary={
+                <Tooltip title={rooms[key].name || ''}>
+                  <Typography variant="caption" noWrap>{rooms[key].name}</Typography>
                 </Tooltip>
               } />
               <ListItemSecondaryAction>
                 <ListItemIcon>
-                  <Badge badgeContent={rooms[key].length} color="primary">
+                  <Badge badgeContent={Object.values(groups[key] || {}).filter(item => item !== null).length} color="secondary">
                     <Face />
                   </Badge>
                 </ListItemIcon>
@@ -166,25 +212,28 @@ class Comp extends React.Component {
             </ListItem>
           ))}
         </List>
-        <Button variant="raised" color="primary" size="small" fullWidth onClick={this.handleCreateRoom}>
+        <Button variant="raised" color="primary" size="small" fullWidth onClick={this.handleRoomCreate}>
           <Add />
         </Button>
       </React.Fragment>
     )
 
     return (
-      <div className={classes.root}>
-        <AppBar position="absolute" color="default" elevation={0} className={classes.header}>
+      <React.Fragment>
+        <AppBar position="fixed" color="default" elevation={0} className={classes.header}>
           <Toolbar>
             <Hidden mdUp>
               <IconButton color="inherit" onClick={this.handleDrawerToggle}>
                 <MenuIcon />
               </IconButton>
             </Hidden>
-            <Typography variant="title" className={classes.placeholder} noWrap>
+            <Typography variant="title" noWrap>
               {room.name}
             </Typography>
-            <Button onClick={this.handleMenu} color={user.id ? "primary" : "secondary"}>
+            <Typography variant="caption" className={classes.placeholder} noWrap>
+              {room.name}
+            </Typography>
+            <Button onClick={this.handleMenu} color={user.id ? "default" : "secondary"}>
               {user.id ? user.displayName : "Login"}
               <AccountCircle />
             </Button>
@@ -223,39 +272,55 @@ class Comp extends React.Component {
             {drawer}
           </Drawer>
         </Hidden>
-        <main>
+        <main className={classes.main}>
           <Toolbar />
           <List>
-            <ListSubheader className={classes.center}>xxx</ListSubheader>
-            <ListItem>
-              <Grid container spacing={8} direction="row-reverse">
-                <Grid item>
-                  <Avatar>R</Avatar>
-                </Grid>
-                <Grid item>
-                  <Paper elevation={0} className={classes.paper}>
-                    <Typography noWrap>xxx</Typography>
-                  </Paper>
-                </Grid>
-              </Grid>
-            </ListItem>
+            {Object.keys(conversation).map((key, index) => (
+              <React.Fragment key={index}>
+                <ListSubheader className={classes.center}>{new Date(key * timespan).toLocaleTimeString()}</ListSubheader>
+                {conversation[key].map((item, index) => {
+                  const speaker = users[item.uid] || {}
+                  return (
+                    <ListItem key={index}>
+                      <Grid container spacing={8} direction={user.id === item.uid ? "row-reverse" : "row"}>
+                        <Grid item>
+                        {speaker.photos && speaker.photos[0] && speaker.photos[0].value ? (
+                          <Avatar src={speaker.photos[0].value} />
+                        ) : (
+                          <Avatar>{speaker.displayName ? speaker.displayName.slice(0, 1) : '+_+'}</Avatar>
+                        )}
+                        </Grid>
+                        <Grid item>
+                          <Paper elevation={0} className={classNames(classes.paper, {
+                            [classes.paper_bg]: user.id === item.uid
+                          })}>
+                            {user.id !== item.uid && <Typography variant="caption" noWrap>{speaker.displayName}</Typography>}
+                            <Typography noWrap>{item.data}</Typography>
+                          </Paper>
+                        </Grid>
+                      </Grid>
+                    </ListItem>
+                  )
+                })}
+              </React.Fragment>
+            ))}
           </List>
-          <Toolbar />
+          <div style={{height: 135}} />
         </main>
         <footer className={classes.footer}>
           <Toolbar>
-            <TextField margin="normal" rows="5" autoFocus fullWidth multiline InputProps={{
+            <TextField margin="normal" rows="5" value={speak} autoFocus fullWidth multiline InputProps={{
               className: classes.input
-            }} />
+            }} onChange={this.handleTextChange} onKeyPress={this.handleKeyPress} />
           </Toolbar>
         </footer>
-      </div>
+      </React.Fragment>
     )
   }
 
   componentDidMount() {
     const { dispatch, match } = this.props
-    dispatch(Rooms.gointo(match.params.room))
+    dispatch(Rooms.join(match.params.room))
   }
 }
 
