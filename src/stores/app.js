@@ -1,7 +1,11 @@
 import url from 'url'
 
+import debug from 'debug'
+
 import sio from 'socket.io-client'
 import { App, User, Users, Rooms, Groups, Messages } from 'stores'
+
+const log = debug('speak-langs:app')
 
 export default {
   state: {
@@ -20,27 +24,27 @@ export default {
 
       const io = window.io = sio(url.resolve(process.env.REACT_APP_SERVER || '', '/io'))
       io.on('error', err => {
-        console.log('error', err)
+        log('error', err)
         dispatch(App.update({
           message: err
         }))
       })
       .on('err', err => {
-        console.log('err', err)
+        log('err', err)
         dispatch(App.update({
           message: err
         }))
       })
       .on('user', user => {
-        console.log('user', user)
+        log('user', user)
         dispatch(User.update(user))
       })
       .on('users', users => {
-        console.log('users', users)
+        log('users', users)
         dispatch(Users.update(users))
       })
       .on('rooms', rooms => {
-        console.log('rooms', rooms)
+        log('rooms', rooms)
         dispatch(Rooms.update(rooms))
 
         const rid =  window.location.pathname.slice(1)
@@ -50,7 +54,7 @@ export default {
         }
       })
       .on('groups', groups => {
-        console.log('groups', groups)
+        log('groups', groups)
         dispatch(Groups.update(groups, true))
 
         Object.keys(groups).forEach(rid => {
@@ -70,7 +74,7 @@ export default {
         })
       })
       .on('messages', messages => {
-        console.log('messages', messages)
+        log('messages', messages)
         Object.values(messages).forEach(conversation => Object.values(conversation).forEach(message => {
           message.created = Date.now()
         }))

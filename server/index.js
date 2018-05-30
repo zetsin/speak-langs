@@ -7,6 +7,9 @@ const child = new (forever.Monitor)('bin/www', {
   cwd: __dirname,
   sourceDir: __dirname,
   watchIgnoreDotFiles: false,
+  logFile: '.node-persist/log.log',
+  outFile: '.node-persist/out.log',
+  errFile: '.node-persist/err.log',
   watchIgnorePatterns: ['.node-persist/**']
 })
 

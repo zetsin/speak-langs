@@ -150,7 +150,7 @@ class Comp extends React.Component {
                 <ListItemIcon>
                   <Avatar src={consts.icons.google} className={classes.avatar} />
                 </ListItemIcon>
-                <ListItemText primary="Google" />
+                <ListItemText primary="Login with Google" />
               </MenuItem>
             ) : (
               <MenuItem onClick={this.handleClose} component="a" href={`${process.env.REACT_APP_SERVER}/auth/logout`}>

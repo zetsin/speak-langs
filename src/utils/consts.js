@@ -8,7 +8,7 @@ export default {
       icon: 'https://appear.in/i/static/images/icons/favicon_v2-196x196.png',
     },
     {
-      name: 'Hangouts.google',
+      name: 'Hangouts.google.com',
       icon: 'https://ssl.gstatic.com/images/icons/material/product/2x/hangouts_32dp.png',
     },
     {
@@ -19,7 +19,7 @@ export default {
     {
       name: 'Custom link',
       icon: 'favicon.ico',
-      placeholder: 'You can put any link from Hangouts, Rabbit, AppearIn'
+      placeholder: 'You can put any link from AppearIn, Hangouts, Rabbit'
     },
   ],
   levels: [

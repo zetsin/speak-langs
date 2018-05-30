@@ -13,7 +13,7 @@ import Mainer from './mainer'
 import Footer from './footer'
 import Asider from './asider'
 
-const styles = theme => console.log(theme) || ({
+const styles = theme => ({
   root: {
     position: 'fixed',
     top: 0,

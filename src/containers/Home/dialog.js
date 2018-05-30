@@ -38,7 +38,7 @@ class Comp extends React.Component {
     platform: 0,
     maximum: 0,
     link: '',
-    language: 0,
+    language: 42,
     level: 0,
   }
 
@@ -70,8 +70,6 @@ class Comp extends React.Component {
   render() {
     const { topic, platform, maximum, link, language, level } = this.state
     const { classes, app } = this.props
-
-    console.log(consts.platforms[platform])
 
     return (
       <Dialog open={app.dialog_open}>
