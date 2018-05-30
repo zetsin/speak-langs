@@ -16,7 +16,7 @@ rooms.init()
     if(!room) {
       rooms.setItem('general', {
         name: 'general',
-        topic: 'This is no topic room',
+        topic: 'Random topic room',
         priority: 1,
         created: Date.now() * 2
       })
