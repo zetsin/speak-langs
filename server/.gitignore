@@ -8,7 +8,6 @@
 
 # production
 /build
-/.node-persist
 
 # misc
 .DS_Store
