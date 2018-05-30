@@ -34,7 +34,7 @@ const styles = {
 
 class Comp extends React.Component {
   state = {
-    topic: 'Random Topic',
+    topic: 'Practice speaking language',
     platform: 0,
     maximum: 0,
     link: '',
