@@ -13,22 +13,18 @@ import Mainer from './mainer'
 import Footer from './footer'
 import Asider from './asider'
 
-import { Rooms } from 'stores'
-
 const styles = theme => console.log(theme) || ({
   root: {
-    width: '100vw',
-    height: '100vh',
+    position: 'fixed',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom:0,
+    overflow: 'hidden'
   },
-
   container: {
-    height: '100%',
     flex: 1,
-  },
-
-  main: {
-    flex: 1,
-    overflow: 'scroll'
+    overflow: 'hidden'
   },
 })
 
@@ -38,31 +34,22 @@ class Comp extends React.Component {
     const { classes } = this.props
 
     return (
-      <Grid container className={classes.root}>
+      <Grid container wrap="nowrap" className={classes.root}>
         <Route component={Sider} />
-        <Grid item container direction="column" className={classes.container}>
-          <Grid item>
-            <Route component={Header} />
-          </Grid>
-          <Grid item container className={classes.container}>
-            <Grid item container direction="column" className={classes.container}>
-              <Grid item className={classes.main}>
+        <Grid container direction="column" className={classes.container}>
+          <Route component={Header} />
+          <Grid container className={classes.container}>
+            <Grid container direction="column" className={classes.container}>
+              <Grid container className={classes.container}>
                 <Route component={Mainer} />
               </Grid>
-              <Grid item>
-                <Route component={Footer} />
-              </Grid>
+              <Route component={Footer} />
             </Grid>
             <Route component={Asider} />
           </Grid>
         </Grid>
       </Grid>
     )
-  }
-
-  componentDidMount() {
-    const { dispatch, match } = this.props
-    dispatch(Rooms.join(match.params.room))
   }
 }
 

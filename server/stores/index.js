@@ -17,7 +17,8 @@ rooms.init()
       rooms.setItem('general', {
         name: 'general',
         topic: 'This is no topic room',
-        datetime: Date.now()
+        priority: 1,
+        created: Date.now() * 2
       })
     }
   })

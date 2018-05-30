@@ -3,33 +3,47 @@ import { connect } from 'react-redux'
 
 import { withStyles } from '@material-ui/core/styles'
 import {
+  withWidth,
   Toolbar,
   Hidden,
   IconButton,
   Button,
-  Typography,
   Menu,
   MenuItem,
   Avatar,
-  ListItem,
-  ListItemAvatar,
-  ListItemText,
   Divider,
-  Tooltip,
+  ListItemText,
+  ListItemIcon,
+  Typography,
 } from '@material-ui/core'
-import MenuIcon from '@material-ui/icons/Menu'
+import {
+  Person,
+  WbIncandescent,
+  Menu as MenuIcon,
+  ExitToApp,
+} from '@material-ui/icons'
 
+import Title from 'components/Title'
 import { App } from 'stores'
+import consts from 'utils/consts'
 
 const styles = theme => ({
   header: {
     background: theme.palette.background.default,
   },
+  title: {
+    paddingTop: 0,
+    paddingBottom: 0,
+  },
   placeholder: {
     flex: 1
   },
-  pointer: {
-    cursor: 'pointer'
+  scroll: {
+    overflow: 'scroll'
+  },
+  avatar: {
+    width: 24,
+    height: 24,
   },
 })
 
@@ -38,17 +52,24 @@ class Comp extends React.Component {
     anchorEl: null
   }
 
-  handleAsiderOpen = event => {
+  handleSiderToggle = event => {
+    const { dispatch, app } = this.props
+    dispatch(App.update({
+      sider_open: !app.sider_open
+    }))
+  }
+
+  handleAsiderToggle = event => {
     const { dispatch, app } = this.props
     dispatch(App.update({
       asider_open: !app.asider_open
     }))
   }
 
-  handleSiderToggle = event => {
-    const { dispatch } = this.props
+  handleTypeToggle = event => {
+    const { dispatch, app } = this.props
     dispatch(App.update({
-      sider_open: true
+      type: app.type === 'light' ? 'dark' : 'light'
     }))
   }
 
@@ -60,46 +81,48 @@ class Comp extends React.Component {
     this.setState({ anchorEl: null });
   }
 
+  handlePlatformClick = event => {
+    const { match, rooms } = this.props
+    const { rid } = match.params
+    const room = rooms[rid] || {}
+    if(room.link) {
+      window.open(room.link)
+    }
+  }
+
   render() {
-    const { classes, match, rooms, groups, user } = this.props
+    const { width, classes, match, rooms, groups, user } = this.props
     const { anchorEl } = this.state
-    const rid = match.params.room
+    const { rid } = match.params
     const room = rooms[rid] || {}
     const group = groups[rid] || {}
 
     return (
       <header className={classes.header}>
-        <Toolbar>
+        <Toolbar disableGutters={['xs', 'sm'].includes(width)}>
           <Hidden mdUp>
             <IconButton color="inherit" onClick={this.handleSiderToggle}>
               <MenuIcon />
             </IconButton>
           </Hidden>
-          <ListItem disableGutters ContainerComponent="div" ContainerProps={{
-            className: classes.placeholder
-          }}>
-            <ListItemAvatar>
-              <Avatar component={Button} variant="fab">G</Avatar>
-            </ListItemAvatar>
-            <ListItemText disableTypography className={classes.pointer} onClick={this.handleAsiderOpen} primary={
-              <Tooltip title={room.name || ''}>
-                <Typography variant="title" noWrap>{room.name ? `${room.name} (${Object.keys(group).length})` : ''}</Typography>
-              </Tooltip>
-            } secondary={
-              <Tooltip title={room.topic || ''}>
-                <Typography variant="caption" noWrap>{room.topic}</Typography>
-              </Tooltip>
-            } />
-          </ListItem>
+          <Title
+            room={room}
+            group={group}
+            onPlatformClick={this.handlePlatformClick}
+            onMembersClick={this.handleAsiderToggle}
+            className={classes.title}
+          />
+          <div className={classes.placeholder} />
           {user.id ? (
-            <Avatar
-              component={Button}
-              variant="fab"
-              src={user.photos && user.photos[0] && user.photos[0].value}
-              onClick={this.handleMenu}
-            />
+            user.photos && user.photos[0] && user.photos[0].value ? (
+              <Avatar component={Button} variant="fab" src={user.photos[0].value} alt={user.displayName} onClick={this.handleMenu} />
+            ) : (
+              <Avatar component={Button} variant="fab">{user.displayName ? user.displayName.slice(0, 1) : 'Me'}</Avatar>
+            )
           ) : (
-            <Button color={user.id ? "primary" : "secondary"} onClick={this.handleMenu}>Login</Button>
+            <IconButton color="secondary" onClick={this.handleMenu}>
+              <Person />
+            </IconButton>
           )}
           <Menu
             anchorEl={anchorEl}
@@ -115,8 +138,30 @@ class Comp extends React.Component {
             open={!!anchorEl}
             onClose={this.handleClose}
           >
-            <MenuItem onClick={this.handleClose} component="a" href={`${process.env.REACT_APP_SERVER}/auth/google`}>Google</MenuItem>
-            <MenuItem onClick={this.handleClose} component="a" href={`${process.env.REACT_APP_SERVER}/auth/logout`}>Logout</MenuItem>
+            <MenuItem onClick={this.handleTypeToggle}>
+              <ListItemIcon>
+                <WbIncandescent />
+              </ListItemIcon>
+              <ListItemText primary="Lilght/Dark" />
+            </MenuItem>
+            <Divider />
+            {!user.id ? (
+              <MenuItem onClick={this.handleClose} component="a" href={`${process.env.REACT_APP_SERVER}/auth/google`}>
+                <ListItemIcon>
+                  <Avatar src={consts.icons.google} className={classes.avatar} />
+                </ListItemIcon>
+                <ListItemText primary="Google" />
+              </MenuItem>
+            ) : (
+              <MenuItem onClick={this.handleClose} component="a" href={`${process.env.REACT_APP_SERVER}/auth/logout`}>
+                <ListItemIcon>
+                  <ExitToApp />
+                </ListItemIcon>
+                <ListItemText disableTypography primary={
+                  <Typography variant="subheading" color="secondary">Logout</Typography>
+                } />
+              </MenuItem>
+            )}
           </Menu>
         </Toolbar>
         <Divider />
@@ -125,7 +170,7 @@ class Comp extends React.Component {
   }
 }
 
-export default withStyles(styles)(connect(state => {
+export default  withWidth()(withStyles(styles)(connect(state => {
   const { app, rooms, user, groups } = state
   return { app, rooms, user, groups }
-})(Comp))
+})(Comp)))

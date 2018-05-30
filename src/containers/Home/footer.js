@@ -27,15 +27,15 @@ class Comp extends React.Component {
   handleTextChange = event => {
     const { dispatch, match } = this.props
     dispatch(Texts.update({
-      [match.params.room]: event.target.value
+      [match.params.rid]: event.target.value
     }))
   }
   handleKeyPress = event => {
     const { dispatch, match } = this.props
     if(event.key === 'Enter' && !event.shiftKey) {
-      dispatch(Messages.send(match.params.room, event.target.value))
+      dispatch(Messages.send(match.params.rid, event.target.value))
       dispatch(Texts.update({
-        [match.params.room]: ''
+        [match.params.rid]: ''
       }))
       event.preventDefault()
     }
@@ -43,7 +43,7 @@ class Comp extends React.Component {
 
   render() {
     const { classes, match, width, texts } = this.props
-    const rid = match.params.room
+    const { rid } = match.params
 
     const rows = {
       'xl': 5,

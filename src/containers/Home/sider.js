@@ -6,34 +6,19 @@ import {
   Drawer,
   Toolbar,
   List,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
-  ListItemSecondaryAction,
-  ListItemAvatar,
-  Avatar,
   Typography,
   Hidden,
   Divider,
-  Badge,
-  Tooltip,
   Grid,
   TextField,
   Button,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
 } from '@material-ui/core'
 import {
-  Face,
   Add,
 } from '@material-ui/icons'
 
+import Title from 'components/Title'
+import Dialog from './dialog'
 import { App, Rooms } from 'stores'
 
 const styles = theme => ({
@@ -91,29 +76,21 @@ class Comp extends React.Component {
       search: event.target.value
     }))
   }
-
-  handleRoomCreate = event => {
-    const { dispatch, app } = this.props
-    dispatch(Rooms.create())
-    dispatch(App.update({
-      dialog_open: !app.dialog_open
-    }))
-  }
-  handleRoomChange = id => event => {
+  handleRoomChange = cid => event => {
     const { dispatch, history, match } = this.props
-    const room = match.params.room
-    if(id !== room) {
-      if(room !== 'general' && room !== 'random') {
-        dispatch(Rooms.leave(room))
+    const { rid } = match.params
+    if(cid !== rid) {
+      if(rid !== 'general') {
+        dispatch(Rooms.leave(rid))
       }
-      dispatch(Rooms.join(id))
-      history.push(id)
+      dispatch(Rooms.join(cid))
+      history.push(cid)
     }
   }
 
   render() {
-    const { classes, match, app, groups, rooms } = this.props
-    const rid = match.params.room
+    const { classes, match, app, groups, rooms, user } = this.props
+    const { rid } = match.params
 
     const drawer = (
       <React.Fragment>
@@ -129,34 +106,20 @@ class Comp extends React.Component {
           className: classes.center
         }} onChange={this.handleSearchChange} />
         <List className={classes.list}>
-          {Object.keys(rooms).filter(key => (rooms[key].name || '').includes(app.search)).sort((a, b) => rooms[a].datetime - rooms[b].datetime).map((key, index) => (
-            <ListItem
+          {Object.keys(rooms).filter(key => (rooms[key].name || '').includes(app.search)).sort((a, b) => rooms[b].created - rooms[a].created).map((key, index) => (
+            <Title
+              id={key}
               key={index}
-              button
+              room={rooms[key]}
+              group={groups[key]}
               color="primary"
               className={rid === key ? classes.selected : ''}
+              nameProps={{
+                color: user.id === key ? "primary" : "default"
+              }}
               onClick={this.handleRoomChange(key)}
-            >
-              <ListItemAvatar>
-                <Avatar component={Button} variant="fab">G</Avatar>
-              </ListItemAvatar>
-              <ListItemText disableTypography primary={
-                <Tooltip title={rooms[key].name || ''}>
-                  <Typography variant="title" noWrap>{rooms[key].name || ''}</Typography>
-                </Tooltip>
-              } secondary={
-                <Tooltip title={rooms[key].topic || ''}>
-                  <Typography variant="caption" noWrap>{rooms[key].topic}</Typography>
-                </Tooltip>
-              } />
-              <ListItemSecondaryAction>
-                <ListItemIcon>
-                  <Badge badgeContent={Object.values(groups[key] || {}).filter(item => item !== null).length} color="secondary">
-                    <Face />
-                  </Badge>
-                </ListItemIcon>
-              </ListItemSecondaryAction>
-            </ListItem>
+              button
+            />
           ))}
         </List>
         <Button variant="raised" color="primary" size="small" fullWidth onClick={this.handleDialogToggle}>
@@ -185,76 +148,21 @@ class Comp extends React.Component {
             {drawer}
           </Drawer>
         </Hidden>
-        <Dialog open={app.dialog_open}>
-          <DialogTitle>Create Room</DialogTitle>
-          <DialogContent>
-            <form>
-              <Grid container spacing={8}>
-                <Grid item xs={12}>
-                  <TextField label="Topic" margin="normal" required fullWidth />
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <FormControl margin="normal" required fullWidth>
-                    <InputLabel>Platfrom</InputLabel>
-                    <Select value={""} onChange={this.handleChange}>
-                      <MenuItem value={""}>Any Language</MenuItem>
-                      <MenuItem value={10}>Ten</MenuItem>
-                      <MenuItem value={20}>Twenty</MenuItem>
-                      <MenuItem value={30}>Thirty</MenuItem>
-                    </Select>
-                  </FormControl>
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <FormControl margin="normal" required fullWidth>
-                    <InputLabel>Limited</InputLabel>
-                    <Select value={""} onChange={this.handleChange}>
-                      <MenuItem value={""}>Any Language</MenuItem>
-                      <MenuItem value={10}>Ten</MenuItem>
-                      <MenuItem value={20}>Twenty</MenuItem>
-                      <MenuItem value={30}>Thirty</MenuItem>
-                    </Select>
-                  </FormControl>
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <FormControl margin="normal" required fullWidth>
-                    <InputLabel>Language</InputLabel>
-                    <Select value={""} onChange={this.handleChange}>
-                      <MenuItem value={""}>Any Language</MenuItem>
-                      <MenuItem value={10}>Ten</MenuItem>
-                      <MenuItem value={20}>Twenty</MenuItem>
-                      <MenuItem value={30}>Thirty</MenuItem>
-                    </Select>
-                  </FormControl>
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <FormControl margin="normal" required fullWidth>
-                    <InputLabel>Level</InputLabel>
-                    <Select value={""} onChange={this.handleChange}>
-                      <MenuItem value={""}>Any Language</MenuItem>
-                      <MenuItem value={10}>Ten</MenuItem>
-                      <MenuItem value={20}>Twenty</MenuItem>
-                      <MenuItem value={30}>Thirty</MenuItem>
-                    </Select>
-                  </FormControl>
-                </Grid>
-              </Grid>
-            </form>
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={this.handleDialogToggle} color="secondary">
-              Cancel
-            </Button>
-            <Button onClick={this.handleRoomCreate} color="primary">
-              Submit
-            </Button>
-          </DialogActions>
-        </Dialog>
+        <Dialog />
       </React.Fragment>
     )
+  }
+  componentDidUpdate() {
+    const { match } = this.props
+    const { rid } = match.params
+    const item = document.getElementById(rid)
+    if(item) {
+      item.scrollIntoViewIfNeeded()
+    }
   }
 }
 
 export default withStyles(styles)(connect(state => {
-  const { app, rooms, groups } = state
-  return { app, rooms, groups }
+  const { app, rooms, groups, user } = state
+  return { app, rooms, groups, user }
 })(Comp))

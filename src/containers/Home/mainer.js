@@ -1,6 +1,6 @@
 import React from 'react'
 import { connect } from 'react-redux'
-import classNames from 'classnames'
+import classnames from 'classnames'
 
 import { withStyles } from '@material-ui/core/styles'
 import {
@@ -11,25 +11,30 @@ import {
   Avatar,
   Paper,
   Typography,
-  Button,
+  IconButton,
 } from '@material-ui/core'
 
+
 const styles = theme => ({
+  root: {
+    flex: 1,
+    overflow: 'scroll',
+  },
   subheader: {
-    textAlign: 'center',
     background: theme.palette.background.default,
   },
-  item: {
-    maxWidth: 'calc(100% - 50px)'
+  box: {
+    flexBasis: 'auto',
   },
   paper: {
     padding: 10,
   },
   paper_bg: {
-    background: '#A2E563',
+    background: theme.palette.primary[theme.palette.type],
   },
-  text: {
-    wordBreak: 'break-all'
+  pre: {
+    whiteSpace: 'pre-wrap',
+    wordBreak: 'break-all',
   },
   center: {
     textAlign: 'center',
@@ -39,11 +44,11 @@ const styles = theme => ({
 class Comp extends React.Component {
 
   render() {
-    const { classes, match, messages, users, user } = this.props
-    const rid = match.params.room
+    const { classes, match, groups, messages, users, user } = this.props
+    const { rid } = match.params
     const timespan = 1000 * 60 * 10
     const conversation = Object.values(messages[rid] || {}).reduce((pre, cur) => {
-      const time = parseInt(cur.datetime / timespan, 10)
+      const time = parseInt(cur.created / timespan, 10)
       return {
         ...pre,
         [time]: [
@@ -52,9 +57,10 @@ class Comp extends React.Component {
         ]
       }
     }, {})
+    const group = groups[rid] || {}
 
     return (
-      <main ref={el => this.main = el}>
+      <main className={classes.root} ref={el => this.main = el}>
         <List>
           {Object.keys(conversation).map((key, index) => (
             <React.Fragment key={index}>
@@ -66,19 +72,19 @@ class Comp extends React.Component {
                 return (
                   <ListItem key={index}>
                     <Grid container spacing={8} direction={user.id === item.uid ? "row-reverse" : "row"}>
-                      <Grid item>
+                      <IconButton>
                         {speaker.photos && speaker.photos[0] && speaker.photos[0].value ? (
-                          <Avatar component={Button} variant="fab" src={speaker.photos[0].value} alt={speaker.displayName} />
+                          <Avatar src={speaker.photos[0].value} alt={speaker.displayName} />
                         ) : (
-                          <Avatar component={Button} variant="fab">{speaker.displayName ? speaker.displayName.slice(0, 1) : '+_+'}</Avatar>
+                          <Avatar>{speaker.displayName ? speaker.displayName.slice(0, 1) : '+_+'}</Avatar>
                         )}
-                      </Grid>
-                      <Grid item className={classes.item}>
-                        <Paper elevation={0} className={classNames(classes.paper, {
+                      </IconButton>
+                      <Grid item xs={10} sm={8} className={classes.box}>
+                        <Paper elevation={0} className={classnames(classes.paper, classnames, {
                           [classes.paper_bg]: user.id === item.uid
                         })}>
                           {user.id !== item.uid && <Typography variant="caption" noWrap>{speaker.displayName}</Typography>}
-                          <Typography className={classes.text}>{item.data}</Typography>
+                          <Typography component="pre" className={classes.pre}>{item.data}</Typography>
                         </Paper>
                       </Grid>
                     </Grid>
@@ -87,17 +93,20 @@ class Comp extends React.Component {
               })}
             </React.Fragment>
           ))}
+          {(group[window.io.id] === undefined || group[window.io.id] === -1) && (
+            <Typography align="center" color="secondary">Your are not in the room</Typography>
+          )}
         </List>
       </main>
     )
   }
 
   componentDidUpdate() {
-    this.main.parentElement.scrollTop = this.main.scrollHeight
+    this.main.scrollTop = this.main.scrollHeight
   }
 }
 
 export default withStyles(styles)(connect(state => {
-  const { messages, users, user } = state
-  return { messages, users, user }
+  const { groups, messages, users, user } = state
+  return { groups, messages, users, user }
 })(Comp))

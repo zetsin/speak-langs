@@ -18,6 +18,11 @@ import {
 import { App } from 'stores'
 
 const styles = theme => ({
+  root: {
+    height: '100%',
+    overflow: 'scroll',
+    borderLeft: '1px solid rgba(0, 0, 0, 0.12)',
+  },
   paper: {
     position: 'static',
   },
@@ -31,9 +36,6 @@ const styles = theme => ({
     }
   },
   list: {
-    height: '100%',
-    overflow: 'scroll',
-    borderLeft: '1px solid rgba(0, 0, 0, 0.12)',
   },
 })
 
@@ -48,7 +50,7 @@ class Comp extends React.Component {
 
   render() {
     const { classes, match, app, groups, users } = this.props
-    const rid = match.params.room
+    const { rid } = match.params
     const group = groups[rid] || {}
 
     const drawer = (
@@ -77,7 +79,7 @@ class Comp extends React.Component {
       <React.Fragment>
         <Hidden smDown>
           {app.asider_open ? (
-            <Grid item sm={5} md={4} lg={3}>
+            <Grid item sm={5} md={4} lg={3} className={classes.root}>
               <Drawer variant="permanent" open classes={{
                 paper: classes.paper,
               }}>

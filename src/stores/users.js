@@ -6,7 +6,11 @@ export default {
     get: function(id, force) {
       const { getState } = this
 
-      if(id && (force || !getState().users[id])) {
+      if(id === 0 || id === -1) {
+        return
+      }
+
+      if(force || !getState().users[id]) {
         window.io.emit('<user', id)
       }
     },

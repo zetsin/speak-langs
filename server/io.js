@@ -3,13 +3,14 @@ const sio = require('socket.io')
 const createError = require('http-errors')
 const persist = require('node-persist')
 const fs = require('fs')
-const stores = require('./stores')
+const stores = require('stores')
+const google = require('utils/google')
 
 module.exports = app => {
   const io = sio(app.get('server'))
   const nsp = io.of('/io')
 
-  const auth = ['>message']
+  const acl = ['+room', '>message']
 
   nsp.use((socket, next) => {
     const passport = socket.request.session.passport
@@ -60,8 +61,11 @@ module.exports = app => {
     .catch(debug)
 
     socket.use((packet, next) => {
-      if(auth.includes(packet[0])) {
+      if(acl.includes(packet[0])) {
         if(!socket.user) {
+          socket.emit('user', {
+            id: 0
+          })
           return next(createError(401, 'UNAUTHORIZED'))
         }
       }
@@ -69,7 +73,7 @@ module.exports = app => {
     })
 
     socket.on('<user', id => {
-      stores.users.getItem(id)
+      stores.users.getItem(`${id}`)
       .then(user => {
         socket.emit('users', {
           [id]: user
@@ -78,12 +82,26 @@ module.exports = app => {
       .catch(debug)
     })
     socket.on('+room', room => {
-      const id = Math.random().toString(32).slice(2)
-      room = {
-        ...room,
-        datetime: Date.now()
-      }
-      socket.join(id, () => {
+      new Promise((resolve, reject) => {
+        room = {
+          ...room,
+          creator: socket.user ? socket.user.id : 0,
+          created: Date.now()
+        }
+        if(room.platform === 0) {
+          room.link = `https://appear.in/${Math.random().toString(32).slice(2)}`
+        }
+        else if(room.platform === 1) {
+          return google().then(link => {
+            room.link = link
+            resolve(room)
+          })
+          .catch(debug)
+        }
+        resolve(room)
+      })
+      .then(room => {
+        const id = socket.user ? socket.user.id : Math.random().toString(32).slice(2)
         stores.rooms.setItem(id, room)
         nsp.emit('rooms', {
           [id]: room
@@ -93,28 +111,44 @@ module.exports = app => {
     socket.on('>room', id => {
       stores.rooms.getItem(id)
       .then(room => {
-        socket.join(id, () => {
-          nsp.emit('groups', {
-            [id]: {
-              [socket.id]: socket.user ? socket.user.id : 0
-            }
+        const join = () => {
+          socket.join(id, () => {
+            nsp.emit('groups', {
+              [id]: {
+                [socket.id]: socket.user ? socket.user.id : 0
+              }
+            })
           })
+        }
+
+        return Promise.resolve().then(() => {
+          if(room.maximum) {
+            nsp.in(id).clients((err, clients) => {
+              if(err) {
+                return Promise.reject(err)
+              }
+
+              if(clients.length >= room.maximum) {
+                return socket.emit('err', 'No More Space')
+              }
+              join()
+            })
+          }
+          else {
+            join()
+          }
         })
       })
       .catch(debug)
     })
     socket.on('<room', id => {
-      stores.rooms.getItem(id)
-      .then(room => {
-        socket.leave(id, () => {
-          nsp.emit('groups', {
-            [id]: {
-              [socket.id]: null
-            }
-          })
+      socket.leave(id, () => {
+        nsp.emit('groups', {
+          [id]: {
+            [socket.id]: -1
+          }
         })
       })
-      .catch(debug)
     })
     socket.on('>message', (room, data) => {
       if(Object.keys(socket.rooms).includes(room)) {
@@ -126,6 +160,9 @@ module.exports = app => {
             }
           }
         })
+      }
+      else {
+        socket.emit('err', 'You are not in the room')
       }
     })
     socket.on('disconnecting', (reason) => {

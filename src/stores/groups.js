@@ -26,10 +26,10 @@ export default {
         ...Object.keys(payload).reduce((pre, cur) => {
           return {
             ...pre,
-            [cur]: {
+            [cur]: Object.keys(payload[cur]).length ? {
               ...state[cur],
               ...payload[cur]
-            }
+            } : {}
           }
         }, {})
       }

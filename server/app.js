@@ -13,7 +13,7 @@ const passport = require('passport')
 const GoogleStrategy = require('passport-google-oauth').OAuth2Strategy
 const routes = require('./routes')
 const io = require('./io')
-const stores = require('./stores') 
+const stores = require('./stores')
 
 const app = express()
 const sessionMiddleware = session({
