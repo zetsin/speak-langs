@@ -40,7 +40,7 @@ Object.keys(routes).forEach(key => app.use(`/${key}`, routes[key]))
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
-  res.sendFile(path.join(__dirname, '../build', 'index.html'))
+  res.sendFile(path.join(__dirname, '../../build', 'index.html'))
 })
 
 // error handler
@@ -51,7 +51,7 @@ app.use(function(err, req, res, next) {
     res.redirect(req.originalUrl)
   }
   else {
-    res.redirect('/')
+    res.redirect('back')
   }
 })
 
