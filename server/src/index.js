@@ -51,7 +51,7 @@ app.use(function(err, req, res, next) {
     res.redirect(req.originalUrl)
   }
   else {
-    res.redirect('back')
+    res.redirect('/')
   }
 })
 
