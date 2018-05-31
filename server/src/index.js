@@ -45,7 +45,7 @@ passport.use(new baiduStrategy({
 passport.use(new weiboStrategy({
   clientID: '3350792186',
   clientSecret: '716743af54404037d82b4bedc1d99aa3',
-  callbackURL: 'http://speak-langs/auth/weibo/oauth2callback'
+  callbackURL: 'http://speak-langs.com/auth/weibo/oauth2callback'
 }, (token, tokenSecret, profile, cb) => {
   profile._json = JSON.parse(profile._json)
   profile.photos = [{
