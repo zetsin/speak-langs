@@ -4,7 +4,7 @@ export default {
 
   actions: {
     send: function(id, text) {
-      window.io.emit('>message', id, text)
+      window.io.emit('+message', id, text)
     },
     update: function(data={}, each) {
       const { dispatch } = this

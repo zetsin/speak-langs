@@ -47,7 +47,7 @@ class Comp extends React.Component {
     const { classes, match, groups, messages, users, user } = this.props
     const { rid } = match.params
     const timespan = 1000 * 60 * 10
-    const conversation = Object.values(messages[rid] || {}).reduce((pre, cur) => {
+    const conversation = Object.values(messages[rid] || {}).sort((a, b) => a.created - b.created).reduce((pre, cur) => {
       const time = parseInt(cur.created / timespan, 10)
       return {
         ...pre,

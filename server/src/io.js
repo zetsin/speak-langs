@@ -175,7 +175,7 @@ module.exports = app => {
         })
       })
     })
-    socket.on('>message', (room, data) => {
+    socket.on('+message', (room, data) => {
       if(!Object.keys(socket.rooms).includes(room)) {
         return socket.emit('err', 'You are not in the room')
       }
@@ -183,7 +183,8 @@ module.exports = app => {
       const id = Math.random().toString(32).slice(2)
       const message = {
         uid: socket.user.id,
-        data
+        data,
+        created: Date.now()
       }
       nsp.to(room).emit('messages', {
         [room]: {
@@ -191,7 +192,7 @@ module.exports = app => {
         }
       })
 
-      stores.local(`messages/${id}`)
+      stores.local(`messages/${room}`)
       .then(messages => messages.setItem(id, message))
       .catch(debug)
     })

@@ -74,9 +74,6 @@ export default {
       })
       .on('messages', messages => {
         log('messages', messages)
-        Object.values(messages).forEach(conversation => Object.values(conversation).forEach(message => {
-          message.created = Date.now()
-        }))
         dispatch(Messages.update(messages, true))
       })
     },
