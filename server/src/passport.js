@@ -19,11 +19,15 @@ passport.use(new weiboStrategy({
   clientSecret: process.env.weibo_clientSecret || 'clientSecret',
   callbackURL: process.env.weibo_callbackURL || '',
 }, (token, tokenSecret, profile, cb) => {
-  console.log(profile)
-  profile._json = JSON.parse(profile._json)
-  profile.photos = [{
-    value: profile._json.profile_image_url
-  }]
+  try {
+    profile._json = JSON.parse(profile._json)
+    profile.photos = [{
+      value: profile._json.profile_image_url
+    }]
+  }
+  catch(e) {
+    debug(e)
+  }
   cb(null, profile)
 }))
 passport.use(new googleStrategy({
