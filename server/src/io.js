@@ -200,7 +200,7 @@ module.exports = app => {
       const groups = {}
       Object.keys(socket.rooms).map(room => {
         groups[room] = {
-          [socket.id]: null
+          [socket.id]: -1
         }
       })
       nsp.emit('groups', groups)
