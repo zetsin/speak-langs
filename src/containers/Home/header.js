@@ -142,16 +142,30 @@ class Comp extends React.Component {
               <ListItemIcon>
                 <WbIncandescent />
               </ListItemIcon>
-              <ListItemText primary="Lilght/Dark" />
+              <ListItemText primary="Lilght/Dark Theme" />
             </MenuItem>
             <Divider />
             {!user.id ? (
-              <MenuItem onClick={this.handleClose} component="a" href={`${process.env.REACT_APP_SERVER}/auth/google`}>
-                <ListItemIcon>
-                  <Avatar src={consts.icons.google} className={classes.avatar} />
-                </ListItemIcon>
-                <ListItemText primary="Login with Google" />
-              </MenuItem>
+              <React.Fragment>
+                <MenuItem onClick={this.handleClose} component="a" href={`${process.env.REACT_APP_SERVER}/auth/google`}>
+                  <ListItemIcon>
+                    <Avatar src={consts.icons.google} className={classes.avatar} />
+                  </ListItemIcon>
+                  <ListItemText primary="Login with Google" />
+                </MenuItem>
+                <MenuItem onClick={this.handleClose} component="a" href={`${process.env.REACT_APP_SERVER}/auth/baidu`}>
+                  <ListItemIcon>
+                    <Avatar src={consts.icons.baidu} className={classes.avatar} />
+                  </ListItemIcon>
+                  <ListItemText primary="Login with Baidu" />
+                </MenuItem>
+                <MenuItem onClick={this.handleClose} component="a" href={`${process.env.REACT_APP_SERVER}/auth/weibo`}>
+                  <ListItemIcon>
+                    <Avatar src={consts.icons.baidu} className={classes.avatar} />
+                  </ListItemIcon>
+                  <ListItemText primary="Login with Weibo" />
+                </MenuItem>
+              </React.Fragment>
             ) : (
               <MenuItem onClick={this.handleClose} component="a" href={`${process.env.REACT_APP_SERVER}/auth/logout`}>
                 <ListItemIcon>

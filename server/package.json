@@ -20,7 +20,9 @@
     "morgan": "~1.9.0",
     "node-persist": "^3.0.1",
     "passport": "^0.4.0",
+    "passport-baidu": "^0.0.1",
     "passport-google-oauth": "^1.0.0",
+    "passport-weibo": "^0.1.2",
     "session-file-store": "^1.2.0",
     "socket.io": "^2.1.1"
   }

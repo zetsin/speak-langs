@@ -9,7 +9,6 @@ const log = debug('speak-langs:app')
 
 export default {
   state: {
-    inited: false,
     message: '',
     search: '',
     sider_open: false,

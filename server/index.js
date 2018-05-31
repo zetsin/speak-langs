@@ -4,13 +4,11 @@ const child = new (forever.Monitor)('bin/www', {
   uid: 'app',
   append: true,
   watch: true,
-  cwd: __dirname,
-  sourceDir: __dirname,
+  sourceDir: 'src',
   watchIgnoreDotFiles: false,
-  logFile: '.node-persist/log.log',
-  outFile: '.node-persist/out.log',
-  errFile: '.node-persist/err.log',
-  watchIgnorePatterns: ['.node-persist/**']
+  logFile: 'forever-log.log',
+  outFile: 'forever-out.log',
+  errFile: 'forever-err.log',
 })
 
 child.on('exit', () => {

@@ -32,6 +32,7 @@ export default {
     'Upper Advanced',
   ],
   icons: {
-    google: 'https://www.google.com/images/branding/product/ico/googleg_lodp.ico'
+    google: 'https://www.google.com/images/branding/product/ico/googleg_lodp.ico',
+    baidu: 'https://www.baidu.com/favicon.ico',
   }
 }
