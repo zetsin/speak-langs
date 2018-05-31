@@ -37,7 +37,7 @@ app.use(express.static(path.join(__dirname, '../../build')))
 passport.use(new baiduStrategy({
   clientID: 'pOkGhm4bG5D5fdnZHb9iNttX',
   clientSecret: 'dOecNbfLOY5IgRoFQEAVzZ1Y2WGrbvtl',
-  callbackURL: 'http://localhost:8000/auth/baidu/oauth2callback'
+  callbackURL: 'http://speak-langs.com/auth/baidu/oauth2callback'
 }, (token, tokenSecret, profile, cb) => {
   profile.displayName = profile.username
   cb(null, profile)

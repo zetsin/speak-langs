@@ -32,7 +32,7 @@ router.get('/google/oauth2callback', redirect, passport.authenticate('google', {
 })
 
 router.get('/baidu', passport.authenticate('baidu'))
-router.get('/baidu/oauth2callback', passport.authenticate('baidu', {
+router.get('/baidu/oauth2callback', redirect, passport.authenticate('baidu', {
   failureRedirect: '/'
 }), (req, res) => {
   res.redirect('back')
