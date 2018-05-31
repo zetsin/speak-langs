@@ -32,13 +32,14 @@ app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
 app.use(cookieParser())
 app.use(sessionMiddleware)
-app.use(express.static(path.join(__dirname, '../build')))
+app.use(express.static(path.join(__dirname, '../../build')))
 
 passport.use(new baiduStrategy({
   clientID: 'pOkGhm4bG5D5fdnZHb9iNttX',
   clientSecret: 'dOecNbfLOY5IgRoFQEAVzZ1Y2WGrbvtl',
   callbackURL: 'http://localhost:8000/auth/baidu/oauth2callback'
 }, (token, tokenSecret, profile, cb) => {
+  profile.displayName = profile.username
   cb(null, profile)
 }))
 passport.use(new weiboStrategy({
@@ -46,6 +47,10 @@ passport.use(new weiboStrategy({
   clientSecret: '716743af54404037d82b4bedc1d99aa3',
   callbackURL: 'http://speak-langs/auth/weibo/oauth2callback'
 }, (token, tokenSecret, profile, cb) => {
+  profile._json = JSON.parse(profile._json)
+  profile.photos = [{
+    value: profile._json.profile_image_url
+  }]
   cb(null, profile)
 }))
 passport.use(new googleStrategy({
@@ -56,7 +61,6 @@ passport.use(new googleStrategy({
   cb(null, profile)
 }))
 passport.serializeUser((user, cb) => {
-  user.displayName = user.displayName || user.username || 'Anonymous'
   stores.users.setItem(user.id, user)
   cb(null, {
     id: user.id
