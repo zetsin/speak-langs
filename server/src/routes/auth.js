@@ -5,14 +5,7 @@ const router = express.Router()
 
 const passport = require('passport')
 
-router.get('/test', (req, res) => {
-  res.json(req.session)
-})
-
-router.get('/google', passport.authenticate('google', {
-  scope: ['openid', 'profile', 'email']
-}))
-router.get('/google/oauth2callback', (req, res, next) => {
+const redirect = (req, res, next) => {
   if(url.parse(req.get('referer') || '').host === process.env.dev_client_host && req.get('host') !== process.env.dev_server_host) {
     res.redirect(url.format({
       ...url.parse(req.originalUrl),
@@ -23,7 +16,16 @@ router.get('/google/oauth2callback', (req, res, next) => {
   else {
     next()
   }
-}, passport.authenticate('google', {
+}
+
+router.get('/test', (req, res) => {
+  res.json(req.session)
+})
+
+router.get('/google', passport.authenticate('google', {
+  scope: ['openid', 'profile', 'email']
+}))
+router.get('/google/oauth2callback', redirect, passport.authenticate('google', {
   failureRedirect: '/'
 }), (req, res) => {
   res.redirect('back')
@@ -37,7 +39,7 @@ router.get('/baidu/oauth2callback', passport.authenticate('baidu', {
 })
 
 router.get('/weibo', passport.authenticate('weibo'))
-router.get('/weibo/oauth2callback', passport.authenticate('weibo', {
+router.get('/weibo/oauth2callback', redirect, passport.authenticate('weibo', {
   failureRedirect: '/'
 }), (req, res) => {
   res.redirect('back')
