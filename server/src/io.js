@@ -1,8 +1,9 @@
+const fs = require('fs')
+
 const debug = require('debug')('speak-langs:io')
 const sio = require('socket.io')
 const createError = require('http-errors')
-const persist = require('node-persist')
-const fs = require('fs')
+
 const stores = require('stores')
 const google = require('utils/google')
 
@@ -109,6 +110,10 @@ module.exports = app => {
       })
     })
     socket.on('>room', id => {
+      if(Object.keys(socket.rooms).includes(id)) {
+        return
+      }
+
       stores.rooms.getItem(id)
       .then(room => {
         const join = () => {
@@ -118,6 +123,22 @@ module.exports = app => {
                 [socket.id]: socket.user ? socket.user.id : 0
               }
             })
+
+            stores.local(`messages/${id}`)
+            .then(messages => {
+              Promise.all([messages.keys(), messages.values()])
+              .then(([keys, values]) => {
+                socket.emit('messages', {
+                  [id]: keys.reduce((pre, cur, index) => {
+                    return {
+                      ...pre,
+                      [cur]: values[index]
+                    }
+                  }, {})
+                })
+              })
+            })
+            .catch(debug)
           })
         }
 
@@ -142,6 +163,10 @@ module.exports = app => {
       .catch(debug)
     })
     socket.on('<room', id => {
+      if(!Object.keys(socket.rooms).includes(id)) {
+        return
+      }
+
       socket.leave(id, () => {
         nsp.emit('groups', {
           [id]: {
@@ -151,19 +176,24 @@ module.exports = app => {
       })
     })
     socket.on('>message', (room, data) => {
-      if(Object.keys(socket.rooms).includes(room)) {
-        nsp.to(room).emit('messages', {
-          [room]: {
-            [Math.random().toString(32).slice(2)]: {
-              uid: socket.user.id,
-              data
-            }
-          }
-        })
+      if(!Object.keys(socket.rooms).includes(room)) {
+        return socket.emit('err', 'You are not in the room')
       }
-      else {
-        socket.emit('err', 'You are not in the room')
+
+      const id = Math.random().toString(32).slice(2)
+      const message = {
+        uid: socket.user.id,
+        data
       }
+      nsp.to(room).emit('messages', {
+        [room]: {
+          [id]: message
+        }
+      })
+
+      stores.local(`messages/${id}`)
+      .then(messages => messages.setItem(id, message))
+      .catch(debug)
     })
     socket.on('disconnecting', (reason) => {
       const groups = {}
