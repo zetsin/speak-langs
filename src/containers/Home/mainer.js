@@ -73,8 +73,8 @@ class Comp extends React.Component {
                   <ListItem key={index}>
                     <Grid container spacing={8} direction={user.id === item.uid ? "row-reverse" : "row"}>
                       <IconButton>
-                        {speaker.photos && speaker.photos[0] && speaker.photos[0].value ? (
-                          <Avatar src={speaker.photos[0].value} alt={speaker.displayName} />
+                        {speaker.image ? (
+                          <Avatar src={speaker.image} alt={speaker.displayName} />
                         ) : (
                           <Avatar>{speaker.displayName ? speaker.displayName.slice(0, 1) : '+_+'}</Avatar>
                         )}

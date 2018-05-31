@@ -59,8 +59,8 @@ class Comp extends React.Component {
           const member = users[uid] || {}
           return (
             <ListItem key={index} button>
-              {member.photos && member.photos[0] && member.photos[0].value ? (
-                <Avatar src={member.photos[0].value} alt={member.displayName} component={Button} variant="fab" />
+              {member.image ? (
+                <Avatar src={member.image} alt={member.displayName} component={Button} variant="fab" />
               ) : (
                 <Avatar component={Button} variant="fab">{member.displayName ? member.displayName.slice(0, 1) : '+_+'}</Avatar>
               )}

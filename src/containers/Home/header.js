@@ -114,8 +114,8 @@ class Comp extends React.Component {
           />
           <div className={classes.placeholder} />
           {user.id ? (
-            user.photos && user.photos[0] && user.photos[0].value ? (
-              <Avatar component={Button} variant="fab" src={user.photos[0].value} alt={user.displayName} onClick={this.handleMenu} />
+            user.image ? (
+              <Avatar component={Button} variant="fab" src={user.image} alt={user.displayName} onClick={this.handleMenu} />
             ) : (
               <Avatar component={Button} variant="fab" onClick={this.handleMenu}>{user.displayName ? user.displayName.slice(0, 1) : 'Me'}</Avatar>
             )
