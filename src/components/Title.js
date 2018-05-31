@@ -68,7 +68,7 @@ class Comp extends React.Component {
           <Typography variant="caption" noWrap>{topic}</Typography>
         } />
         <IconButton onClick={onMembersClick}>
-          <Badge badgeContent={Object.values(group).filter(item => item !== null).length} color="secondary">
+          <Badge badgeContent={Object.values(group).filter(item => item !== -1).length} color="secondary">
             <Maximum />
           </Badge>
         </IconButton>
