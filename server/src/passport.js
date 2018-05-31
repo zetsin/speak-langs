@@ -38,7 +38,7 @@ passport.use(new googleStrategy({
   cb(null, profile)
 }))
 passport.serializeUser((user, cb) => {
-  user.image = user.photos[0] ? user.photos[0].value : ''
+  user.image = (user.photos && user.photos[0]) ? user.photos[0].value : ''
   user._raw = ''
   stores.users.setItem(user.id, user)
   cb(null, {
