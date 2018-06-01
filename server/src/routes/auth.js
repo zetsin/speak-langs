@@ -6,7 +6,11 @@ const router = express.Router()
 const passport = require('passport')
 
 const redirect = (req, res, next) => {
-  if(url.parse(req.get('referer') || '').host === process.env.dev_client_host && req.get('host') !== process.env.dev_server_host) {
+  const test = (hostname) => {
+    hostname === 'localhost' || hostname === '127.0.0.1'
+  }
+
+  if(test(referer.hostname) && !test(req.hostname)) {
     res.redirect(url.format({
       ...url.parse(req.originalUrl),
       protocol: 'http',
