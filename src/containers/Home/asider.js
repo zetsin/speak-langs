@@ -82,7 +82,7 @@ class Comp extends React.Component {
     return (
       <React.Fragment>
         <Hidden smDown>
-          {app.asider_open ? (
+          {!app.asider_open ? (
             <Grid item sm={5} md={4} lg={3} className={classes.root}>
               <Drawer variant="permanent" open className={classes.drawer} classes={{
                 paper: classes.paper,

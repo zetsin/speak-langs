@@ -105,24 +105,24 @@ module.exports = app => {
         })
       })
     })
-    socket.on('>room', id => {
-      if(Object.keys(socket.rooms).includes(id)) {
+    socket.on('>room', rid => {
+      if(Object.keys(socket.rooms).includes(rid)) {
         return
       }
-      storage.rooms.get(id)
+      storage.rooms.get(rid)
       .then(room => {
         const join = () => {
-          socket.join(id, () => {
+          socket.join(rid, () => {
             nsp.emit('groups', {
-              [id]: {
+              [rid]: {
                 [socket.id]: socket.user ? socket.user.id : 0
               }
             })
 
-            storage.messages(id).valueOf()
+            storage.messages(rid).valueOf()
             .then(messages => {
               socket.emit('messages', {
-                [id]: messages
+                [rid]: messages
               })
             })
             .catch(debug)
@@ -131,7 +131,7 @@ module.exports = app => {
 
         return Promise.resolve().then(() => {
           if(room.maximum) {
-            nsp.in(id).clients((err, clients) => {
+            nsp.in(rid).clients((err, clients) => {
               if(err) {
                 return Promise.reject(err)
               }
@@ -149,21 +149,21 @@ module.exports = app => {
       })
       .catch(debug)
     })
-    socket.on('<room', id => {
-      if(!Object.keys(socket.rooms).includes(id)) {
+    socket.on('<room', rid => {
+      if(!Object.keys(socket.rooms).includes(rid)) {
         return
       }
 
-      socket.leave(id, () => {
+      socket.leave(rid, () => {
         nsp.emit('groups', {
-          [id]: {
+          [rid]: {
             [socket.id]: -1
           }
         })
       })
     })
-    socket.on('+message', (room, data) => {
-      if(!Object.keys(socket.rooms).includes(room)) {
+    socket.on('+message', (rid, data) => {
+      if(!Object.keys(socket.rooms).includes(rid)) {
         return socket.emit('err', 'You are not in the room')
       }
 
@@ -173,8 +173,8 @@ module.exports = app => {
         data,
         created: Date.now()
       }
-      nsp.to(room).emit('messages', {
-        [room]: {
+      nsp.to(rid).emit('messages', {
+        [rid]: {
           [id]: message
         }
       })
@@ -182,13 +182,14 @@ module.exports = app => {
       storage.messages(room).set(id, message)
     })
     socket.on('disconnecting', (reason) => {
-      const groups = {}
-      Object.keys(socket.rooms).map(room => {
-        groups[room] = {
-          [socket.id]: -1
+      nsp.emit('groups', Object.keys(socket.rooms).reduce((pre, cur) => {
+        return {
+          ...pre,
+          [cur]: {
+            [socket.id]: -1
+          }
         }
-      })
-      nsp.emit('groups', groups)
+      }, {}))
     })
   })
 
