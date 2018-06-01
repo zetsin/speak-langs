@@ -10,6 +10,7 @@ const redirect = (req, res, next) => {
     hostname === 'localhost' || hostname === '127.0.0.1'
   }
 
+  const referer = url.parse(req.get('referer') || '')
   if(test(referer.hostname) && !test(req.hostname)) {
     res.redirect(url.format({
       ...url.parse(req.originalUrl),
