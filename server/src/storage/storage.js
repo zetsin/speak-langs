@@ -135,7 +135,7 @@ const createStorage = (dir='node-storage', opts={}) => {
     .then(file => Promise.resolve(file.value))
     .catch(err => {
       debug(err)
-      return Promise.resolve()
+      return Promise.resolve('')
     })
   }
   storage.set = function(key='', value='') {
