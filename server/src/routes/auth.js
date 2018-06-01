@@ -18,10 +18,6 @@ const redirect = (req, res, next) => {
   }
 }
 
-router.get('/test', (req, res) => {
-  res.json(req.session)
-})
-
 router.get('/google', passport.authenticate('google', {
   scope: ['openid', 'profile', 'email']
 }))

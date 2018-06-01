@@ -6,7 +6,7 @@ export default {
     get: function(id, force) {
       const { getState } = this
 
-      if(id === 0 || id === -1) {
+      if(id <= 0) {
         return
       }
 

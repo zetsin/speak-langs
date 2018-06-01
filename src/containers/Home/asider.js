@@ -19,12 +19,16 @@ import { App } from 'stores'
 
 const styles = theme => ({
   root: {
-    height: '100%',
+    display: 'flex',
     overflow: 'scroll',
     borderLeft: '1px solid rgba(0, 0, 0, 0.12)',
   },
+  drawer: {
+    flex: 1
+  },
   paper: {
     position: 'static',
+    height: '100%'
   },
   paper_temp: {
     width: '80%',
@@ -55,7 +59,7 @@ class Comp extends React.Component {
 
     const drawer = (
       <List className={classes.list}>
-        {Object.values(group).map((uid, index) => {
+        {Object.values(group).filter(uid => uid !== -1).map((uid, index) => {
           const member = users[uid] || {}
           return (
             <ListItem key={index} button>
@@ -80,7 +84,7 @@ class Comp extends React.Component {
         <Hidden smDown>
           {app.asider_open ? (
             <Grid item sm={5} md={4} lg={3} className={classes.root}>
-              <Drawer variant="permanent" open classes={{
+              <Drawer variant="permanent" open className={classes.drawer} classes={{
                 paper: classes.paper,
               }}>
                 {drawer}

@@ -4,7 +4,7 @@ const baiduStrategy = require('passport-baidu').Strategy
 const weiboStrategy = require('passport-weibo').Strategy
 const googleStrategy = require('passport-google-oauth').OAuth2Strategy
 
-const stores = require('./stores')
+const nodeStorage = require('./storage')
 
 passport.use(new baiduStrategy({
   clientID: process.env.baidu_clientID || 'clientID',
@@ -22,15 +22,19 @@ passport.use(new weiboStrategy({
   Promise.resolve()
   .then(() => {
     profile._json = profile._json || {}
-    profile._json = JSON.parse(profile._json)
+    if(typeof profile._json === 'string') {
+      profile._json = JSON.parse(profile._json)
+    }
+  })
+  .catch(Promise.resolve)
+  .then(() => {
+    profile.photos = [{
+      value: profile._json.profile_image_url || ''
+    }]
+  
+    cb(null, profile)
   })
   .catch(debug)
-
-  profile.photos = [{
-    value: profile._json.profile_image_url || ''
-  }]
-  
-  cb(null, profile)
 }))
 passport.use(new googleStrategy({
   clientID: process.env.google_clientID || 'clientID',
@@ -42,13 +46,13 @@ passport.use(new googleStrategy({
 passport.serializeUser((user, cb) => {
   user.image = (user.photos && user.photos[0]) ? user.photos[0].value : ''
   user._raw = ''
-  stores.users.setItem(user.id, user)
+  nodeStorage.users.set(user.id, user)
   cb(null, {
     id: user.id
   })
 })
 passport.deserializeUser((user, cb) => {
-  stores.users.getItem(user.id)
+  nodeStorage.users.get(user.id)
   .then(user => {
     cb(user ? null : createError(401), user)
   })

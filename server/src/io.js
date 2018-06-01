@@ -4,8 +4,8 @@ const debug = require('debug')('speak-langs:io')
 const sio = require('socket.io')
 const createError = require('http-errors')
 
-const stores = require('stores')
-const google = require('utils/google')
+const storage = require('./storage')
+const google = require('./utils/google')
 
 module.exports = app => {
   const io = sio(app.get('server'))
@@ -16,7 +16,7 @@ module.exports = app => {
   nsp.use((socket, next) => {
     const passport = socket.request.session.passport
     if(passport && passport.user) {
-      stores.users.getItem(passport.user.id)
+      storage.users.get(passport.user.id)
       .then(user => {
         socket.user = user
         next()
@@ -29,21 +29,17 @@ module.exports = app => {
   })
   nsp.on('connection', socket => {
     socket.emit('user', socket.user)
-    Promise.all([stores.rooms.keys(), stores.rooms.values()])
-    .then(([keys, values]) => {
-      socket.emit('rooms', keys.reduce((pre, cur, index) => {
-        return {
-          ...pre,
-          [cur]: values[index]
-        }
-      }, {}))
+    storage.rooms.valueOf()
+    .then(rooms => {
+      socket.emit('rooms', rooms)
       
-      Promise.all(keys.map((key, index) => new Promise((resolve, reject) => {
+      Promise.all(Object.keys(rooms).map((key, index) => new Promise((resolve, reject) => {
         nsp.in(key).clients((err, clients) => err ? reject(err) : resolve({
           [key]: clients.reduce((pre, cur) => {
+            const user = nsp.sockets[cur].user
             return {
               ...pre,
-              [cur]: 0
+              [cur]: user ? user.id : 0
             }
           }, {})
         }))
@@ -74,7 +70,7 @@ module.exports = app => {
     })
 
     socket.on('<user', id => {
-      stores.users.getItem(`${id}`)
+      storage.users.get(`${id}`)
       .then(user => {
         socket.emit('users', {
           [id]: user
@@ -103,7 +99,7 @@ module.exports = app => {
       })
       .then(room => {
         const id = socket.user ? socket.user.id : Math.random().toString(32).slice(2)
-        stores.rooms.setItem(id, room)
+        storage.rooms.set(id, room)
         nsp.emit('rooms', {
           [id]: room
         })
@@ -113,8 +109,7 @@ module.exports = app => {
       if(Object.keys(socket.rooms).includes(id)) {
         return
       }
-
-      stores.rooms.getItem(id)
+      storage.rooms.get(id)
       .then(room => {
         const join = () => {
           socket.join(id, () => {
@@ -124,18 +119,10 @@ module.exports = app => {
               }
             })
 
-            stores.local(`messages/${id}`)
+            storage.messages(id).valueOf()
             .then(messages => {
-              Promise.all([messages.keys(), messages.values()])
-              .then(([keys, values]) => {
-                socket.emit('messages', {
-                  [id]: keys.reduce((pre, cur, index) => {
-                    return {
-                      ...pre,
-                      [cur]: values[index]
-                    }
-                  }, {})
-                })
+              socket.emit('messages', {
+                [id]: messages
               })
             })
             .catch(debug)
@@ -192,9 +179,7 @@ module.exports = app => {
         }
       })
 
-      stores.local(`messages/${room}`)
-      .then(messages => messages.setItem(id, message))
-      .catch(debug)
+      storage.messages(room).set(id, message)
     })
     socket.on('disconnecting', (reason) => {
       const groups = {}

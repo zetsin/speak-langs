@@ -93,7 +93,7 @@ class Comp extends React.Component {
               })}
             </React.Fragment>
           ))}
-          {(group[window.io.id] === undefined || group[window.io.id] === -1) && (
+          {(group[window.io.id] === undefined || group[window.io.id] < 0) && (
             <Typography align="center" color="secondary">Your are not in the room</Typography>
           )}
         </List>

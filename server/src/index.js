@@ -16,7 +16,7 @@ const io = require('./io')
 
 const sessionMiddleware = session({
   store: new store({
-    path: '.node-persist/sessions'
+    path: 'node-storage/sessions'
   }),
   secret: 'zetsin',
   resave: true,

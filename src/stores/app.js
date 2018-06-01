@@ -1,11 +1,11 @@
 import url from 'url'
 
-import debug from 'debug'
+import createDebug from 'debug'
 
 import sio from 'socket.io-client'
 import { App, User, Users, Rooms, Groups, Messages } from 'stores'
 
-const log = debug('speak-langs:app')
+const debug = createDebug('speak-langs:app')
 
 export default {
   state: {
@@ -23,27 +23,27 @@ export default {
 
       const io = window.io = sio(url.resolve(process.env.REACT_APP_SERVER || '', '/io'))
       io.on('error', err => {
-        log('error', err)
+        debug('error', err)
         dispatch(App.update({
           message: err
         }))
       })
       .on('err', err => {
-        log('err', err)
+        debug('err', err)
         dispatch(App.update({
           message: err
         }))
       })
       .on('user', user => {
-        log('user', user)
+        debug('user', user)
         dispatch(User.update(user))
       })
       .on('users', users => {
-        log('users', users)
+        debug('users', users)
         dispatch(Users.update(users))
       })
       .on('rooms', rooms => {
-        log('rooms', rooms)
+        debug('rooms', rooms)
         dispatch(Rooms.update(rooms))
 
         const rid =  window.location.pathname.slice(1)
@@ -53,8 +53,8 @@ export default {
         }
       })
       .on('groups', groups => {
-        log('groups', groups)
-        dispatch(Groups.update(groups, true))
+        debug('groups', groups)
+        const states = getState()
 
         Object.keys(groups).forEach(rid => {
           const group = groups[rid]
@@ -63,18 +63,31 @@ export default {
             if(uid !== -1) {
               dispatch(Users.get(uid))
 
-              const { rooms } = getState()
-              const room = rooms[rid]
+              if(uid !== 0) {
+                if(Object.values(states.groups[rid] || {}).includes(uid)) {
+                  group[id] = -1
+                }
+              }
+
+              const room = states.rooms[rid]
               if(room && room.link && io.id === id) {
                 window.open(room.link)
               }
             }
           })
         })
+        dispatch(Groups.update(groups, true))
       })
       .on('messages', messages => {
-        log('messages', messages)
+        debug('messages', messages)
         dispatch(Messages.update(messages, true))
+
+        Object.keys(messages).forEach(rid => {
+          const conversation = messages[rid]
+          Object.values(conversation).forEach(message => {
+            dispatch(Users.get(message.uid))
+          })
+        })
       })
     },
     update: function(data={}) {
