@@ -34,5 +34,6 @@ export default {
   icons: {
     google: 'https://www.google.com/images/branding/product/ico/googleg_lodp.ico',
     baidu: 'https://www.baidu.com/favicon.ico',
+    weibo: 'https://weibo.com/favicon.ico',
   }
 }

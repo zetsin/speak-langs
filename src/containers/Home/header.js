@@ -161,7 +161,7 @@ class Comp extends React.Component {
                 </MenuItem>
                 <MenuItem onClick={this.handleClose} component="a" href={`${process.env.REACT_APP_SERVER}/auth/weibo`}>
                   <ListItemIcon>
-                    <Avatar src={consts.icons.baidu} className={classes.avatar} />
+                    <Avatar src={consts.icons.weibo} className={classes.avatar} />
                   </ListItemIcon>
                   <ListItemText primary="Login with Weibo" />
                 </MenuItem>
