@@ -7,7 +7,7 @@ const passport = require('passport')
 
 const redirect = (req, res, next) => {
   const test = (hostname) => {
-    hostname === 'localhost' || hostname === '127.0.0.1'
+    return hostname === 'localhost' || hostname === '127.0.0.1'
   }
 
   const referer = url.parse(req.get('referer') || '')
