@@ -4,7 +4,6 @@ RUN echo $NODE_ENV
 
 RUN mkdir -p /app
 COPY . /app
-VOLUME /app
 
 WORKDIR /app
 RUN npm install --unsafe-perm
