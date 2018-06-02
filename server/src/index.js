@@ -2,6 +2,7 @@ require('app-module-path').addPath(__dirname)
 const path = require('path')
 const url = require('url')
 
+const compression = require('compression')
 const createError = require('http-errors')
 const express = require('express')
 const cookieParser = require('cookie-parser')
@@ -25,6 +26,7 @@ const sessionMiddleware = session({
 
 const app = express()
 app.use(logger('dev'))
+app.use(compression())
 app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
 app.use(cookieParser())
