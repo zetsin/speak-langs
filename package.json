@@ -31,5 +31,8 @@
     "serve": "cd server && npm start",
     "serve:dev": "cd server && npm run start:dev",
     "postinstall": "cd server && npm install"
+  },
+  "config": {
+    "unsafe-perm": true
   }
 }
