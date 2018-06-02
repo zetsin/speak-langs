@@ -179,7 +179,7 @@ module.exports = app => {
         }
       })
 
-      storage.messages(room).set(id, message)
+      storage.messages(rid).set(id, message)
     })
     socket.on('disconnecting', (reason) => {
       nsp.emit('groups', Object.keys(socket.rooms).reduce((pre, cur) => {

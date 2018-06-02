@@ -21,6 +21,7 @@ import {
   WbIncandescent,
   Menu as MenuIcon,
   ExitToApp,
+  Room,
 } from '@material-ui/icons'
 
 import Title from 'components/Title'
@@ -97,6 +98,8 @@ class Comp extends React.Component {
     const room = rooms[rid] || {}
     const group = groups[rid] || {}
 
+    const estate = Object.keys(rooms).find(rid => rooms[rid].creator === user.id)
+
     return (
       <header className={classes.header}>
         <Toolbar disableGutters={['xs', 'sm'].includes(width)}>
@@ -138,14 +141,7 @@ class Comp extends React.Component {
             open={!!anchorEl}
             onClose={this.handleClose}
           >
-            <MenuItem onClick={this.handleTypeToggle}>
-              <ListItemIcon>
-                <WbIncandescent />
-              </ListItemIcon>
-              <ListItemText primary="Lilght/Dark Theme" />
-            </MenuItem>
-            <Divider />
-            {!user.id ? (
+            {!user.id && (
               <React.Fragment>
                 <MenuItem onClick={this.handleClose} component="a" href={`${config.server}/auth/google`}>
                   <ListItemIcon>
@@ -166,7 +162,26 @@ class Comp extends React.Component {
                   <ListItemText primary="Login with Weibo" />
                 </MenuItem>
               </React.Fragment>
-            ) : (
+            )}
+            {!user.id && <Divider />}
+            {user.id && estate && (
+              <MenuItem onClick={this.handleClose} component="a" href={`/${estate}`}>
+                <ListItemIcon>
+                  <Room />
+                </ListItemIcon>
+                <ListItemText disableTypography primary={
+                  <Typography variant="subheading" color="primary">My Room</Typography>
+                } />
+              </MenuItem>
+            )}
+            <MenuItem onClick={this.handleTypeToggle}>
+              <ListItemIcon>
+                <WbIncandescent />
+              </ListItemIcon>
+              <ListItemText primary="Lilght/Dark Theme" />
+            </MenuItem>
+            {user.id && <Divider />}
+            {user.id && (
               <MenuItem onClick={this.handleClose} component="a" href={`${config.server}/auth/logout`}>
                 <ListItemIcon>
                   <ExitToApp />

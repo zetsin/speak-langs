@@ -123,7 +123,7 @@ class Comp extends React.Component {
           ))}
         </List>
         <Button variant="raised" color="primary" size="small" fullWidth onClick={this.handleDialogToggle}>
-          Create room<Add />
+          Create/Update My Room<Add />
         </Button>
       </React.Fragment>
     )

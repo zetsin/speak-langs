@@ -75,11 +75,11 @@ export default {
             }
           })
         })
-        dispatch(Groups.update(groups, true))
+        dispatch(Groups.update(groups))
       })
       .on('messages', messages => {
         debug('messages', messages)
-        dispatch(Messages.update(messages, true))
+        dispatch(Messages.update(messages))
 
         Object.keys(messages).forEach(rid => {
           const conversation = messages[rid]

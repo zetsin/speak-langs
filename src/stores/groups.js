@@ -3,11 +3,11 @@ export default {
   },
 
   actions: {
-    update: function(data={}, each) {
+    update: function(data={}) {
       const { dispatch } = this
 
       dispatch({
-        type: each ? 'groups/saveone' : 'groups/save',
+        type: 'groups/save',
         payload: data
       })
     },
@@ -15,24 +15,11 @@ export default {
 
   reducers: {
     save: (state, payload) => {
+      const loop = (s, p) => Object.keys(p).map(key => s[key] && typeof p[key] === 'object' ? loop(s[key], p[key]) : s[key] = p[key])
+      loop(state, payload)
       return {
-        ...state,
-        ...payload
+        ...state
       }
     },
-    saveone: (state, payload) => {
-      return {
-        ...state,
-        ...Object.keys(payload).reduce((pre, cur) => {
-          return {
-            ...pre,
-            [cur]: Object.keys(payload[cur]).length ? {
-              ...state[cur],
-              ...payload[cur]
-            } : {}
-          }
-        }, {})
-      }
-    }
   }
 }
