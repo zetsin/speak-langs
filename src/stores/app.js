@@ -1,5 +1,3 @@
-import url from 'url'
-
 import createDebug from 'debug'
 
 import sio from 'socket.io-client'
@@ -21,7 +19,7 @@ export default {
     connect: function() {
       const { dispatch, getState } = this
 
-      const io = window.io = sio(url.resolve(process.env.REACT_APP_SERVER || '', '/io'))
+      const io = window.io = sio(`${window.location.protocol}//${window.location.hostname}:${process.env.REACT_APP_SERVER_PORT}/io`)
       io.on('error', err => {
         debug('error', err)
         dispatch(App.update({
