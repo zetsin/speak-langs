@@ -1,7 +1,5 @@
 FROM node:lateset
 
-EXPOSE 80
-
 RUN mkdir -p /app
 COPY . /app
 VOLUME /app
@@ -9,4 +7,6 @@ VOLUME /app
 WORKDIR /app
 RUN npm install
 RUN npm run build
-RUN npm run serve
+
+EXPOSE 80
+CMD npm run serve
