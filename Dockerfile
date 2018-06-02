@@ -1,6 +1,6 @@
 FROM node:latest
 
-ENTRYPOINT echo $NODE_ENV
+RUN echo $NODE_ENV
 
 RUN mkdir -p /app
 COPY . /app
