@@ -1,7 +1,8 @@
 import createDebug from 'debug'
-
 import sio from 'socket.io-client'
+
 import { App, User, Users, Rooms, Groups, Messages } from 'stores'
+import config from 'config'
 
 const debug = createDebug('speak-langs:app')
 
@@ -19,7 +20,7 @@ export default {
     connect: function() {
       const { dispatch, getState } = this
 
-      const io = window.io = sio(`${window.location.protocol}//${window.location.hostname}:${process.env.REACT_APP_SERVER_PORT}/io`)
+      const io = window.io = sio(`${config.server}/io`)
       io.on('error', err => {
         debug('error', err)
         dispatch(App.update({

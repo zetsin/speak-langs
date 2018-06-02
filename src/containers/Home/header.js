@@ -25,7 +25,7 @@ import {
 
 import Title from 'components/Title'
 import { App } from 'stores'
-import consts from 'utils/consts'
+import config from 'config'
 
 const styles = theme => ({
   header: {
@@ -147,27 +147,27 @@ class Comp extends React.Component {
             <Divider />
             {!user.id ? (
               <React.Fragment>
-                <MenuItem onClick={this.handleClose} component="a" href={`${process.env.REACT_APP_SERVER}/auth/google`}>
+                <MenuItem onClick={this.handleClose} component="a" href={`${config.server}/auth/google`}>
                   <ListItemIcon>
-                    <Avatar src={consts.icons.google} className={classes.avatar} />
+                    <Avatar src={config.icons.google} className={classes.avatar} />
                   </ListItemIcon>
                   <ListItemText primary="Login with Google" />
                 </MenuItem>
-                <MenuItem onClick={this.handleClose} component="a" href={`${process.env.REACT_APP_SERVER}/auth/baidu`}>
+                <MenuItem onClick={this.handleClose} component="a" href={`${config.server}/auth/baidu`}>
                   <ListItemIcon>
-                    <Avatar src={consts.icons.baidu} className={classes.avatar} />
+                    <Avatar src={config.icons.baidu} className={classes.avatar} />
                   </ListItemIcon>
                   <ListItemText primary="Login with Baidu" />
                 </MenuItem>
-                <MenuItem onClick={this.handleClose} component="a" href={`${process.env.REACT_APP_SERVER}/auth/weibo`}>
+                <MenuItem onClick={this.handleClose} component="a" href={`${config.server}/auth/weibo`}>
                   <ListItemIcon>
-                    <Avatar src={consts.icons.weibo} className={classes.avatar} />
+                    <Avatar src={config.icons.weibo} className={classes.avatar} />
                   </ListItemIcon>
                   <ListItemText primary="Login with Weibo" />
                 </MenuItem>
               </React.Fragment>
             ) : (
-              <MenuItem onClick={this.handleClose} component="a" href={`${process.env.REACT_APP_SERVER}/auth/logout`}>
+              <MenuItem onClick={this.handleClose} component="a" href={`${config.server}/auth/logout`}>
                 <ListItemIcon>
                   <ExitToApp />
                 </ListItemIcon>

@@ -25,7 +25,7 @@ import {
   Filter9Plus,
 } from '@material-ui/icons'
 
-import consts from 'utils/consts'
+import config from 'config'
 
 const styles = {
   root: {
@@ -45,10 +45,10 @@ class Comp extends React.Component {
   render() {
     const { classes, room={}, group={}, nameProps={}, className, onPlatformClick, onMembersClick, ...rest } = this.props
 
-    const platform = consts.platforms[room.platform] || consts.platforms[consts.platforms.length - 1]
+    const platform = config.platforms[room.platform] || config.platforms[config.platforms.length - 1]
     const link = room.link || ''
-    const name = room.name || (consts.languages[room.language] || consts.languages[0]).name
-    const level = consts.levels[room.level] || consts.levels[0]
+    const name = room.name || (config.languages[room.language] || config.languages[0]).name
+    const level = config.levels[room.level] || config.levels[0]
     const topic = room.topic || 'Random Topic'
     const Maximum = [Filter9Plus, Filter1, Filter2, Filter3, Filter4, Filter5, Filter6, Filter7, Filter8, Filter9][room.maximum] || Filter9Plus
 

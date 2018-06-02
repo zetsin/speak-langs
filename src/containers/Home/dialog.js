@@ -19,7 +19,7 @@ import {
 } from '@material-ui/core'
 
 import { App, Rooms } from 'stores'
-import consts from 'utils/consts'
+import config from 'config'
 
 const styles = {
   smallAvatar: {
@@ -84,7 +84,7 @@ class Comp extends React.Component {
                 <FormControl margin="normal" required fullWidth>
                   <InputLabel>Platfrom</InputLabel>
                   <Select value={platform} onChange={this.handleFormChange('platform')}>
-                    {consts.platforms.map((item, index) => (
+                    {config.platforms.map((item, index) => (
                       <MenuItem key={index} value={index}>
                         <Grid container>
                           <Typography variant="subheading" className={classes.placeholder}>{item.name}</Typography>
@@ -112,7 +112,7 @@ class Comp extends React.Component {
                   <TextField
                     margin="normal"
                     label="Label"
-                    placeholder={consts.platforms[platform].placeholder}
+                    placeholder={config.platforms[platform].placeholder}
                     value={link}
                     onChange={this.handleFormChange('link')}
                     InputLabelProps={{
@@ -127,7 +127,7 @@ class Comp extends React.Component {
                 <FormControl margin="normal" required fullWidth>
                   <InputLabel>Language</InputLabel>
                   <Select value={language} onChange={this.handleFormChange('language')}>
-                    {consts.languages.map((item, index) => (
+                    {config.languages.map((item, index) => (
                       <MenuItem key={index} value={index}>
                         <Typography variant="subheading">{`${item.name || ''} - ${item.nativeName || ''}`}</Typography>
                       </MenuItem>
@@ -139,7 +139,7 @@ class Comp extends React.Component {
                 <FormControl margin="normal" required fullWidth>
                   <InputLabel>Level</InputLabel>
                   <Select value={level} onChange={this.handleFormChange('level')}>
-                    {consts.levels.map((item, index) => (
+                    {config.levels.map((item, index) => (
                       <MenuItem key={index} value={index}>
                         <Typography variant="subheading">{item}</Typography>
                       </MenuItem>
