@@ -2,8 +2,7 @@ const forever = require('forever-monitor')
 
 const child = new (forever.Monitor)('bin/www', {
   uid: 'app',
-  append: true,
-  watch: true,
+  watch: process.env.NODE_ENV === 'development',
   sourceDir: 'src',
   watchIgnoreDotFiles: false,
   logFile: 'forever-log.log',

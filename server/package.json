@@ -3,8 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "node -r dotenv/config index dotenv_config_path=.env.production",
-    "start:dev": "node -r dotenv/config index dotenv_config_path=.env.development"
+    "start": "node -r dotenv/config index"
   },
   "dependencies": {
     "app-module-path": "^2.2.0",
