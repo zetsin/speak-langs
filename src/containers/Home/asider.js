@@ -53,13 +53,13 @@ class Comp extends React.Component {
   }
 
   render() {
-    const { classes, match, app, groups, users } = this.props
+    const { classes, match, app, rooms, users } = this.props
     const { rid } = match.params
-    const group = groups[rid] || {}
+    const room = rooms[rid] || {}
 
     const drawer = (
       <List className={classes.list}>
-        {Object.values(group).filter(uid => uid !== -1).map((uid, index) => {
+        {Object.values(room.clients || {}).filter(uid => uid !== -1).map((uid, index) => {
           const member = users[uid] || {}
           return (
             <ListItem key={index} button>
@@ -107,6 +107,6 @@ class Comp extends React.Component {
 }
 
 export default withStyles(styles)(connect(state => {
-  const { app, groups, users } = state
-  return { app, groups, users }
+  const { app, rooms, users } = state
+  return { app, rooms, users }
 })(Comp))

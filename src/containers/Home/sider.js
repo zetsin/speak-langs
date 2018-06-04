@@ -89,7 +89,7 @@ class Comp extends React.Component {
   }
 
   render() {
-    const { classes, match, app, groups, rooms, user } = this.props
+    const { classes, match, app, rooms, user } = this.props
     const { rid } = match.params
 
     const drawer = (
@@ -111,7 +111,6 @@ class Comp extends React.Component {
               id={key}
               key={index}
               room={rooms[key]}
-              group={groups[key]}
               color="primary"
               className={rid === key ? classes.selected : ''}
               nameProps={{
@@ -163,6 +162,6 @@ class Comp extends React.Component {
 }
 
 export default withStyles(styles)(connect(state => {
-  const { app, rooms, groups, user } = state
-  return { app, rooms, groups, user }
+  const { app, rooms, user } = state
+  return { app, rooms, user }
 })(Comp))

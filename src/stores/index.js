@@ -4,7 +4,6 @@ import app from './app'
 import user from './user'
 import users from './users'
 import rooms from './rooms'
-import groups from './groups'
 import texts from './texts'
 import messages from './messages'
 
@@ -13,7 +12,6 @@ export default combineReducers({
   user,
   users,
   rooms,
-  groups,
   texts,
   messages,
 })
@@ -22,6 +20,5 @@ export const App = thunkActions(app)
 export const User = thunkActions(user)
 export const Users = thunkActions(users)
 export const Rooms = thunkActions(rooms)
-export const Groups = thunkActions(groups)
 export const Texts = thunkActions(texts)
 export const Messages = thunkActions(messages)

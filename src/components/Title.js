@@ -43,7 +43,7 @@ const styles = {
 class Comp extends React.Component {
 
   render() {
-    const { classes, room={}, group={}, nameProps={}, className, onPlatformClick, onMembersClick, ...rest } = this.props
+    const { classes, room={}, nameProps={}, className, onPlatformClick, onMembersClick, ...rest } = this.props
 
     const platform = config.platforms[room.platform] || config.platforms[config.platforms.length - 1]
     const link = room.link || ''
@@ -68,7 +68,7 @@ class Comp extends React.Component {
           <Typography variant="caption" noWrap>{topic}</Typography>
         } />
         <IconButton onClick={onMembersClick}>
-          <Badge badgeContent={Object.values(group).filter(item => item !== -1).length} color="secondary">
+          <Badge badgeContent={Object.values(room.clients || {}).filter(item => item !== -1).length} color="secondary">
             <Maximum />
           </Badge>
         </IconButton>

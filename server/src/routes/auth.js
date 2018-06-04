@@ -15,7 +15,7 @@ const redirect = (req, res, next) => {
     res.redirect(url.format({
       ...url.parse(req.originalUrl),
       protocol: 'http',
-      hostname: req.hostname,
+      hostname: referer.hostname,
       port: process.env.PORT,
     }).toString())
   }

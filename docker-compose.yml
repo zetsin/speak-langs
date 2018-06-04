@@ -6,37 +6,30 @@ services:
       context: .
       dockerfile: Dockerfile.dev
     ports:
-     - "3000:3000"
+      - "3000:3000"
     volumes:
-     - .:/app
+      - .:/app
     depends_on:
-     - web
+      - web
   web:
     build: .
     environment:
-      # NODE_ENV: production
       NODE_ENV: development
     ports:
-     - "80:80"
+      - "80:80"
     volumes:
-     - .:/app
+      - .:/app
     depends_on:
-     - mongo
+      - mongo
   mongo:
     image: mongo
     restart: always
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: example
 
   mongo-express:
     image: mongo-express
     restart: always
     ports:
       - 8081:8081
-    environment:
-      ME_CONFIG_MONGODB_ADMINUSERNAME: root
-      ME_CONFIG_MONGODB_ADMINPASSWORD: example
     depends_on:
-     - mongo
+      - mongo
       

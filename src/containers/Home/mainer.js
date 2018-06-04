@@ -44,7 +44,7 @@ const styles = theme => ({
 class Comp extends React.Component {
 
   render() {
-    const { classes, match, groups, messages, users, user } = this.props
+    const { classes, match, rooms, messages, users, user } = this.props
     const { rid } = match.params
     const timespan = 1000 * 60 * 10
     const conversation = Object.values(messages[rid] || {}).sort((a, b) => a.created - b.created).reduce((pre, cur) => {
@@ -57,7 +57,8 @@ class Comp extends React.Component {
         ]
       }
     }, {})
-    const group = groups[rid] || {}
+    const room = rooms[rid] || {}
+    const clients = room.clients || {}
 
     return (
       <main className={classes.root} ref={el => this.main = el}>
@@ -93,7 +94,7 @@ class Comp extends React.Component {
               })}
             </React.Fragment>
           ))}
-          {(group[window.io.id] === undefined || group[window.io.id] < 0) && (
+          {(clients[window.io.id] === undefined || clients[window.io.id] < 0) && (
             <Typography align="center" color="secondary">Your are not in the room</Typography>
           )}
         </List>
@@ -107,6 +108,6 @@ class Comp extends React.Component {
 }
 
 export default withStyles(styles)(connect(state => {
-  const { groups, messages, users, user } = state
-  return { groups, messages, users, user }
+  const { rooms, messages, users, user } = state
+  return { rooms, messages, users, user }
 })(Comp))

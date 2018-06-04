@@ -92,11 +92,10 @@ class Comp extends React.Component {
   }
 
   render() {
-    const { width, classes, match, rooms, groups, user } = this.props
+    const { width, classes, match, rooms, user } = this.props
     const { anchorEl } = this.state
     const { rid } = match.params
     const room = rooms[rid] || {}
-    const group = groups[rid] || {}
 
     const estate = Object.keys(rooms).find(rid => rooms[rid].creator === user.id)
 
@@ -110,7 +109,6 @@ class Comp extends React.Component {
           </Hidden>
           <Title
             room={room}
-            group={group}
             onPlatformClick={this.handlePlatformClick}
             onMembersClick={this.handleAsiderToggle}
             className={classes.title}
@@ -200,6 +198,6 @@ class Comp extends React.Component {
 }
 
 export default  withWidth()(withStyles(styles)(connect(state => {
-  const { app, rooms, user, groups } = state
-  return { app, rooms, user, groups }
+  const { app, rooms, user } = state
+  return { app, rooms, user }
 })(Comp)))

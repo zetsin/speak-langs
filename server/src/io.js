@@ -10,13 +10,16 @@ const google = require('./utils/google')
 module.exports = app => {
   const io = sio(app.get('server'))
   const nsp = io.of('/io')
-
   const acl = ['+room', '>message']
+  const db = app.get('db')
 
   nsp.use((socket, next) => {
     const passport = socket.request.session.passport
     if(passport && passport.user) {
-      storage.users.get(passport.user.id)
+      db.collection('users')
+      .findOne({
+        _id: passport.user.id
+      })
       .then(user => {
         socket.user = user
         next()
@@ -29,30 +32,34 @@ module.exports = app => {
   })
   nsp.on('connection', socket => {
     socket.emit('user', socket.user)
-    storage.rooms.valueOf()
+    db.collection('rooms')
+    .find({})
+    .toArray()
     .then(rooms => {
-      socket.emit('rooms', rooms)
-      
-      Promise.all(Object.keys(rooms).map((key, index) => new Promise((resolve, reject) => {
-        nsp.in(key).clients((err, clients) => err ? reject(err) : resolve({
-          [key]: clients.reduce((pre, cur) => {
-            const user = nsp.sockets[cur].user
-            return {
-              ...pre,
-              [cur]: user ? user.id : 0
-            }
-          }, {})
+      return Promise.all(rooms.map(room => new Promise((resolve, reject) => {
+        nsp.in(room._id).clients((err, clients) => err ? reject(err) : resolve({
+          ...room,
+          clients: {
+            ...clients.reduce((pre, cur) => {
+              const user = nsp.sockets[cur].user
+              return {
+                ...pre,
+                [cur]: user ? user.id : 0
+              }
+            }, {})
+          }
         }))
       })))
-      .then(groups => {
-        socket.emit('groups', groups.reduce((pre, cur) => {
+      .then(rooms => {
+        rooms = rooms.reduce((pre, cur) => {
           return {
             ...pre,
-            ...cur
+            [cur._id]: cur,
           }
-        }, {}))
+        }, {})
+
+        socket.emit('rooms', rooms)
       })
-      .catch(debug)
       
     })
     .catch(debug)
@@ -69,11 +76,14 @@ module.exports = app => {
       next()
     })
 
-    socket.on('<user', id => {
-      storage.users.get(`${id}`)
+    socket.on('<user', _id => {
+      db.collection('users')
+      .findOne({
+        _id
+      })
       .then(user => {
         socket.emit('users', {
-          [id]: user
+          [_id]: user
         })
       })
       .catch(debug)
@@ -98,10 +108,16 @@ module.exports = app => {
         resolve(room)
       })
       .then(room => {
-        const id = socket.user ? socket.user.id : Math.random().toString(32).slice(2)
-        storage.rooms.set(id, room)
+        const _id = socket.user ? socket.user.id : Math.random().toString(32).slice(2)
+        db.collection('rooms')
+        .updateOne({}, {
+          _id,
+          ...room,
+        }, {
+          upsert: true
+        })
         nsp.emit('rooms', {
-          [id]: room
+          [_id]: room
         })
       })
     })
@@ -109,27 +125,45 @@ module.exports = app => {
       if(Object.keys(socket.rooms).includes(rid)) {
         return
       }
-      storage.rooms.get(rid)
+      db.collection('rooms')
+      .findOne({
+        _id: rid
+      })
       .then(room => {
         const join = () => {
           socket.join(rid, () => {
-            nsp.emit('groups', {
+            nsp.emit('rooms', {
               [rid]: {
-                [socket.id]: socket.user ? socket.user.id : 0
+                clients: {
+                  [socket.id]: socket.user ? socket.user.id : 0
+                }
               }
             })
 
-            storage.messages(rid).valueOf()
-            .then(messages => {
-              socket.emit('messages', {
-                [rid]: messages
-              })
-            })
-            .catch(debug)
+            // db.collection('messages')
+            // .find({
+            //   rid
+            // })
+            // .toArray()
+            // .then(messages => {
+            //   messages = messages.reduce((pre, cur) => {
+            //     return {
+            //       ...pre,
+            //       [cur._id]: cur,
+            //     }
+            //   }, {})
+            //   socket.emit('messages', {
+            //     [rid]: messages
+            //   })
+            // })
+            // .catch(debug)
           })
         }
 
         return Promise.resolve().then(() => {
+          if(!room) {
+            return
+          }
           if(room.maximum) {
             nsp.in(rid).clients((err, clients) => {
               if(err) {
@@ -155,9 +189,11 @@ module.exports = app => {
       }
 
       socket.leave(rid, () => {
-        nsp.emit('groups', {
+        nsp.emit('rooms', {
           [rid]: {
-            [socket.id]: -1
+            clients: {
+              [socket.id]: -1
+            }
           }
         })
       })
@@ -167,7 +203,7 @@ module.exports = app => {
         return socket.emit('err', 'You are not in the room')
       }
 
-      const id = Math.random().toString(32).slice(2)
+      const _id = Math.random().toString(32).slice(2)
       const message = {
         uid: socket.user.id,
         data,
@@ -175,18 +211,25 @@ module.exports = app => {
       }
       nsp.to(rid).emit('messages', {
         [rid]: {
-          [id]: message
+          [_id]: message
         }
       })
 
-      storage.messages(rid).set(id, message)
+      db.collection('messages')
+      .updateOne({}, {
+        ...message,
+        rid,
+        _id,
+      })
     })
     socket.on('disconnecting', (reason) => {
-      nsp.emit('groups', Object.keys(socket.rooms).reduce((pre, cur) => {
+      nsp.emit('rooms', Object.keys(socket.rooms).reduce((pre, cur) => {
         return {
           ...pre,
           [cur]: {
-            [socket.id]: -1
+            clients: {
+              [socket.id]: -1
+            }
           }
         }
       }, {}))

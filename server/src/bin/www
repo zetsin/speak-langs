@@ -3,6 +3,7 @@
 /**
  * Module dependencies.
  */
+require('dotenv').config()
 var app = require('../index');
 var debug = require('debug')('speak-langs:server');
 var http = require('http');

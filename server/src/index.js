@@ -2,6 +2,7 @@ require('app-module-path').addPath(__dirname)
 const path = require('path')
 const url = require('url')
 
+const mongodb = require('mongodb')
 const compression = require('compression')
 const createError = require('http-errors')
 const express = require('express')
@@ -25,6 +26,7 @@ const sessionMiddleware = session({
 })
 
 const app = express()
+
 app.use(logger('dev'))
 app.use(compression())
 app.use(express.json())
@@ -32,7 +34,6 @@ app.use(express.urlencoded({ extended: false }))
 app.use(cookieParser())
 app.use(sessionMiddleware)
 app.use(express.static(path.join(__dirname, '../../build')))
-
 
 app.use(passport.initialize())
 app.use(passport.session())
@@ -58,6 +59,24 @@ app.use(function(err, req, res, next) {
 })
 
 app.on('listening', () => {
-  io(app).use((socket, next) => sessionMiddleware(socket.request, socket.request.res, next))
+  mongodb.MongoClient.connect(process.env.mongodb)
+  .then(client => {
+    const db = client.db('speak-langs')
+    db.collection('rooms')
+    .update({}, {
+      _id: 'general',
+      name: 'general',
+      topic: 'Random topic room',
+      priority: 1,
+      created: Date.now() * 2
+    }, {
+      upsert: true
+    })
+    .then(() => {
+      app.set('db', db)
+      io(app).use((socket, next) => sessionMiddleware(socket.request, socket.request.res, next))
+    })
+  })
+  .catch(debug)
 })
 module.exports = app
