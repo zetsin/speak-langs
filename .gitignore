@@ -23,5 +23,5 @@ yarn-debug.log*
 yarn-error.log*
 
 # docker-compose
-docker-compose.default.yml
+docker-compose.dev.yml
 docker-compose.prod.yml
