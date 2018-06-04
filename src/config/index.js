@@ -1,7 +1,7 @@
 import languages from 'languages'
 
 export default {
-  server: `${window.location.protocol}//${window.location.hostname}:${process.env.REACT_APP_SERVER_PORT}`,
+  server: `${window.location.protocol}//${window.location.hostname}:${process.env.REACT_APP_SERVER_PORT || 80}`,
   languages: [{name: 'Any Language'}].concat(languages.getAllLanguageCode().map(languages.getLanguageInfo).sort((a, b) => a.name.charCodeAt(0) - b.name.charCodeAt(0))),
   platforms: [
     {
