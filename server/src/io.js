@@ -4,18 +4,18 @@ const debug = require('debug')('speak-langs:io')
 const sio = require('socket.io')
 const createError = require('http-errors')
 
-const storage = require('./storage')
 const google = require('./utils/google')
 
 module.exports = app => {
   const io = sio(app.get('server'))
   const nsp = io.of('/io')
-  const acl = ['+room', '>message']
+  const acl = ['+room', '+message']
   const db = app.get('db')
 
   nsp.use((socket, next) => {
-    const passport = socket.request.session.passport
-    if(passport && passport.user) {
+    const session = socket.request.session || {}
+    const passport = session.passport || {}
+    if(passport.user) {
       db.collection('users')
       .findOne({
         _id: passport.user.id
@@ -103,15 +103,15 @@ module.exports = app => {
             room.link = link
             resolve(room)
           })
-          .catch(debug)
         }
         resolve(room)
       })
       .then(room => {
         const _id = socket.user ? socket.user.id : Math.random().toString(32).slice(2)
         db.collection('rooms')
-        .updateOne({}, {
+        .update({
           _id,
+        }, {
           ...room,
         }, {
           upsert: true
@@ -120,11 +120,13 @@ module.exports = app => {
           [_id]: room
         })
       })
+      .catch(debug)
     })
     socket.on('>room', rid => {
       if(Object.keys(socket.rooms).includes(rid)) {
         return
       }
+
       db.collection('rooms')
       .findOne({
         _id: rid
@@ -140,46 +142,38 @@ module.exports = app => {
               }
             })
 
-            // db.collection('messages')
-            // .find({
-            //   rid
-            // })
-            // .toArray()
-            // .then(messages => {
-            //   messages = messages.reduce((pre, cur) => {
-            //     return {
-            //       ...pre,
-            //       [cur._id]: cur,
-            //     }
-            //   }, {})
-            //   socket.emit('messages', {
-            //     [rid]: messages
-            //   })
-            // })
-            // .catch(debug)
+            db.collection('chat')
+            .findOne({
+              _id: rid
+            })
+            .then(chat => {
+              if(!chat || !chat.messages) {
+                return
+              }
+              socket.emit('messages', {
+                [rid]: chat.messages
+              })
+            })
           })
         }
+        if(!room) {
+          return
+        }
+        if(room.maximum) {
+          return nsp.in(rid).clients((err, clients) => {
+            if(err) {
+              return Promise.reject(err)
+            }
 
-        return Promise.resolve().then(() => {
-          if(!room) {
-            return
-          }
-          if(room.maximum) {
-            nsp.in(rid).clients((err, clients) => {
-              if(err) {
-                return Promise.reject(err)
-              }
-
-              if(clients.length >= room.maximum) {
-                return socket.emit('err', 'No More Space')
-              }
-              join()
-            })
-          }
-          else {
+            if(clients.length >= room.maximum) {
+              return socket.emit('err', 'No More Space')
+            }
             join()
-          }
-        })
+          })
+        }
+        else {
+          return join()
+        }
       })
       .catch(debug)
     })
@@ -215,16 +209,20 @@ module.exports = app => {
         }
       })
 
-      db.collection('messages')
-      .updateOne({}, {
-        ...message,
-        rid,
-        _id,
+      db.collection('chat')
+      .update({
+        _id: rid,
+      }, {
+        $set: {
+          [`messages.${_id}`]: message
+        }
+      }, {
+        upsert: true
       })
     })
     socket.on('disconnecting', (reason) => {
       nsp.emit('rooms', Object.keys(socket.rooms).reduce((pre, cur) => {
-        return {
+        return socket.id === cur ? pre : {
           ...pre,
           [cur]: {
             clients: {

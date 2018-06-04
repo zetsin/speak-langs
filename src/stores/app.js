@@ -18,7 +18,7 @@ export default {
 
   actions: {
     connect: function() {
-      const { dispatch } = this
+      const { dispatch, getState } = this
 
       const io = window.io = sio(`${config.server}/io`)
       io.on('error', err => {
@@ -43,40 +43,44 @@ export default {
       })
       .on('rooms', rooms => {
         debug('rooms', rooms)
-        dispatch(Rooms.update(rooms))
 
         const rid =  window.location.pathname.slice(1)
         const room = rooms[rid]
         if(room) {
           dispatch(Rooms.join(rid))
         }
+
+        const states = getState()
+
+        Object.keys(rooms).forEach(rid => {
+          const clients = rooms[rid].clients || {}
+          Object.keys(clients).forEach(cio => {
+            const uid = clients[cio]
+            if(uid === -1) {
+              return
+            }
+            dispatch(Users.get(uid))
+
+            const _room = states.rooms[rid] || {}
+            if(_room.link && cio === io.id) {
+              window.open(_room.link)
+            }
+
+            if(uid === 0) {
+              return
+            }
+
+            const _clients = _room.clients || {}
+            Object.keys(_clients).forEach(cio => {
+              if(_clients[cio] === uid) {
+                clients[cio] = -1
+              }
+            })
+          })
+        })
+        
+        dispatch(Rooms.update(rooms))
       })
-      // .on('groups', groups => {
-      //   debug('groups', groups)
-      //   const states = getState()
-
-      //   Object.keys(groups).forEach(rid => {
-      //     const group = groups[rid]
-      //     Object.keys(group).forEach(id => {
-      //       const uid = group[id]
-      //       if(uid !== -1) {
-      //         dispatch(Users.get(uid))
-
-      //         if(uid !== 0) {
-      //           if(Object.values(states.groups[rid] || {}).includes(uid)) {
-      //             group[id] = -1
-      //           }
-      //         }
-
-      //         const room = states.rooms[rid]
-      //         if(room && room.link && io.id === id) {
-      //           window.open(room.link)
-      //         }
-      //       }
-      //     })
-      //   })
-      //   dispatch(Groups.update(groups))
-      // })
       .on('messages', messages => {
         debug('messages', messages)
         dispatch(Messages.update(messages))
