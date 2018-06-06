@@ -45,7 +45,9 @@ class Comp extends React.Component {
               </Grid>
               <Route component={Footer} />
             </Grid>
-            <Route component={Asider} />
+            <Grid item sm={false} md={4} lg={3}>
+              <Route component={Asider} />
+            </Grid>
           </Grid>
         </Grid>
       </Grid>

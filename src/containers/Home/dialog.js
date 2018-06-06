@@ -72,7 +72,7 @@ class Comp extends React.Component {
     const { classes, app } = this.props
 
     return (
-      <Dialog open={app.dialog_open}>
+      <Dialog open={!!app.dialog_open}>
         <DialogTitle>Create Room</DialogTitle>
         <DialogContent>
           <form>

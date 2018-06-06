@@ -24,13 +24,14 @@ const styles = theme => ({
     borderLeft: '1px solid rgba(0, 0, 0, 0.12)',
   },
   drawer: {
-    flex: 1
+    height: '100%',
+    borderLeft: '1px solid rgba(0, 0, 0, 0.12)',
   },
   paper: {
     position: 'static',
-    height: '100%'
+    height: '100%',
   },
-  paper_temp: {
+  paper_mobile: {
     width: '80%',
     [theme.breakpoints.up('sm')]: {
       width: '70%',
@@ -39,8 +40,13 @@ const styles = theme => ({
       width: '60%',
     }
   },
-  list: {
+  container: {
+    flex: 1,
   },
+  list: {
+    flex: 1,
+    overflow: 'scroll'
+  }
 })
 
 class Comp extends React.Component {
@@ -58,43 +64,44 @@ class Comp extends React.Component {
     const room = rooms[rid] || {}
 
     const drawer = (
-      <List className={classes.list}>
-        {Object.values(room.clients || {}).filter(uid => uid !== -1).map((uid, index) => {
-          const member = users[uid] || {}
-          return (
-            <ListItem key={index} button>
-              {member.image ? (
-                <Avatar src={member.image} alt={member.displayName} component={Button} variant="fab" />
-              ) : (
-                <Avatar component={Button} variant="fab">{member.displayName ? member.displayName.slice(0, 1) : '+_+'}</Avatar>
-              )}
-              <ListItemText disableTypography primary={
-                <Tooltip title={member.displayName || 'guest'}>
-                  <Typography variant="subheading" noWrap>{member.displayName || 'guest'}</Typography>
-                </Tooltip>
-              } />
-            </ListItem>
-          )
-        })}
-      </List>
+      <Grid container direction="column" className={classes.container}>
+        <List className={classes.list}>
+          {Object.values(room.clients || {}).filter(uid => uid !== -1).map((uid, index) => {
+            const member = users[uid] || {}
+            return (
+              <ListItem key={index} button>
+                {member.image ? (
+                  <Avatar src={member.image} alt={member.displayName} component={Button} variant="fab" />
+                ) : (
+                  <Avatar component={Button} variant="fab">{member.displayName ? member.displayName.slice(0, 1) : '+_+'}</Avatar>
+                )}
+                <ListItemText disableTypography primary={
+                  <Tooltip title={member.displayName || 'guest'}>
+                    <Typography variant="subheading" noWrap>{member.displayName || 'guest'}</Typography>
+                  </Tooltip>
+                } />
+              </ListItem>
+            )
+          })}
+        </List>
+        <Typography variant="caption" gutterBottom align="center">
+          ©Created by zetsin@gmail.com
+        </Typography>
+      </Grid>
     )
 
     return (
       <React.Fragment>
         <Hidden smDown>
-          {!app.asider_open ? (
-            <Grid item sm={5} md={4} lg={3} className={classes.root}>
-              <Drawer variant="permanent" open className={classes.drawer} classes={{
-                paper: classes.paper,
-              }}>
-                {drawer}
-              </Drawer>
-            </Grid>
-          ) : ''}
+          <Drawer variant="permanent" open={!app.asider_open} className={classes.drawer} classes={{
+            paper: classes.paper,
+          }}>
+            {drawer}
+          </Drawer>
         </Hidden>
         <Hidden mdUp>
           <Drawer variant="temporary" anchor="right" open={app.asider_open} onClose={this.handleDrawerToggle} classes={{
-            paper: classes.paper_temp,
+            paper: classes.paper_mobile,
           }} ModalProps={{
             keepMounted: true, // Better open performance on mobile.
           }}>
