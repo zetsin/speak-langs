@@ -42,6 +42,15 @@ class Comp extends React.Component {
     level: 0,
   }
 
+  handleEnter = event => {
+    const { rooms, user } = this.props
+
+    const room = Object.values(rooms).find(room => room.creator === user.id)
+    if(room) {
+      this.setState(room)
+    }
+  }
+
   handleFormChange = key => event => {
     const state = {
       [key]: event.target.value
@@ -72,7 +81,7 @@ class Comp extends React.Component {
     const { classes, app } = this.props
 
     return (
-      <Dialog open={!!app.dialog_open}>
+      <Dialog open={!!app.dialog_open} onEnter={this.handleEnter}>
         <DialogTitle>Create Room</DialogTitle>
         <DialogContent>
           <form>
@@ -164,6 +173,6 @@ class Comp extends React.Component {
 }
 
 export default withStyles(styles)(connect(state => {
-  const { app } = state
-  return { app }
+  const { app, rooms, user } = state
+  return { app, rooms, user }
 })(Comp))

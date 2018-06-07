@@ -1,6 +1,7 @@
 FROM node:latest
 
 RUN mkdir -p /app
+VOLUME /app
 COPY . /app
 
 WORKDIR /app

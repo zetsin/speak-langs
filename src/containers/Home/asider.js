@@ -93,11 +93,15 @@ class Comp extends React.Component {
     return (
       <React.Fragment>
         <Hidden smDown>
-          <Drawer variant="permanent" open={!app.asider_open} className={classes.drawer} classes={{
-            paper: classes.paper,
-          }}>
-            {drawer}
-          </Drawer>
+          {!app.asider_open && (
+            <Grid item sm={false} md={4} lg={3}>
+              <Drawer variant="permanent" className={classes.drawer} classes={{
+                paper: classes.paper,
+              }}>
+                {drawer}
+              </Drawer>
+            </Grid>
+          )}
         </Hidden>
         <Hidden mdUp>
           <Drawer variant="temporary" anchor="right" open={app.asider_open} onClose={this.handleDrawerToggle} classes={{

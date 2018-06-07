@@ -13,7 +13,7 @@ export default {
       window.io.emit('<room', id)
     },
     update: function(data={}) {
-      const { dispatch } = this
+      const { dispatch } = this.props
 
       dispatch({
         type: 'rooms/save',

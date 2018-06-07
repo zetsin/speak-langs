@@ -6158,9 +6158,9 @@ redux-persist@^5.9.1:
   version "5.9.1"
   resolved "https://registry.yarnpkg.com/redux-persist/-/redux-persist-5.9.1.tgz#83bd4abd526ef768f63fceee338fa9d8ed6552d6"
 
-redux-thunk-it@^1.0.6:
-  version "1.0.6"
-  resolved "https://registry.yarnpkg.com/redux-thunk-it/-/redux-thunk-it-1.0.6.tgz#fb8b5cfe3ca48817d1f2bb6771a5e2ead669e337"
+redux-thunk-it@^1.0.8:
+  version "1.0.8"
+  resolved "https://registry.yarnpkg.com/redux-thunk-it/-/redux-thunk-it-1.0.8.tgz#85ed3f1397aacafec8e388e073bff3f268763a2f"
   dependencies:
     redux-thunk "^2.2.0"
 

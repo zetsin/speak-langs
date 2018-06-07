@@ -7,7 +7,7 @@ export default {
       window.io.emit('+message', id, text)
     },
     update: function(data={}) {
-      const { dispatch } = this
+      const { dispatch } = this.props
 
       dispatch({
         type: 'messages/save',

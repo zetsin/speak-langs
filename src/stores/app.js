@@ -18,7 +18,7 @@ export default {
 
   actions: {
     connect: function() {
-      const { dispatch, getState } = this
+      const { dispatch } = this.props
 
       const io = window.io = sio(`${config.server}/io`)
       io.on('error', err => {
@@ -50,8 +50,6 @@ export default {
           dispatch(Rooms.join(rid))
         }
 
-        const states = getState()
-
         Object.keys(rooms).forEach(rid => {
           const clients = rooms[rid].clients || {}
           Object.keys(clients).forEach(cio => {
@@ -61,7 +59,7 @@ export default {
             }
             dispatch(Users.get(uid))
 
-            const _room = states.rooms[rid] || {}
+            const _room = this.props.rooms[rid] || {}
             if(_room.link && cio === io.id) {
               window.open(_room.link)
             }
@@ -94,7 +92,7 @@ export default {
       })
     },
     update: function(data={}) {
-      const { dispatch } = this
+      const { dispatch } = this.props
 
       dispatch({
         type: 'app/save',

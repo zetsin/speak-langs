@@ -4,18 +4,18 @@ export default {
 
   actions: {
     get: function(id, force) {
-      const { getState } = this
+      const { users } = this.props
 
       if(id <= 0) {
         return
       }
 
-      if(force || !getState().users[id]) {
+      if(force || !users[id]) {
         window.io.emit('<user', id)
       }
     },
     update: function(user={}) {
-      const { dispatch } = this
+      const { dispatch } = this.props
 
       dispatch({
         type: 'users/save',

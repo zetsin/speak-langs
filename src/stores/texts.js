@@ -4,7 +4,7 @@ export default {
 
   actions: {
     update: function(data={}) {
-      const { dispatch } = this
+      const { dispatch } = this.props
 
       dispatch({
         type: 'texts/save',

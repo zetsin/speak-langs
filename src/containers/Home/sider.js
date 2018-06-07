@@ -92,8 +92,6 @@ class Comp extends React.Component {
     const { classes, match, app, rooms, user } = this.props
     const { rid } = match.params
 
-    console.log(rooms)
-
     const drawer = (
       <React.Fragment>
         <Toolbar>
