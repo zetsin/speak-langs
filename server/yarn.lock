@@ -253,9 +253,9 @@ concat-map@0.0.1:
   version "0.0.1"
   resolved "https://registry.yarnpkg.com/concat-map/-/concat-map-0.0.1.tgz#d8a96bd77fd68df7793a73036a3ba0d5405d477b"
 
-connect-mongodb-session@^2.0.2:
-  version "2.0.2"
-  resolved "https://registry.yarnpkg.com/connect-mongodb-session/-/connect-mongodb-session-2.0.2.tgz#8722aebd41473c011cd1acd5b73963ef318fe4f5"
+connect-mongodb-session@^2.0.3:
+  version "2.0.3"
+  resolved "https://registry.yarnpkg.com/connect-mongodb-session/-/connect-mongodb-session-2.0.3.tgz#af8ac4e30b684794f93d6909237cec2f80081f44"
   dependencies:
     mongodb "~3.0.4"
 
@@ -298,7 +298,7 @@ cycle@1.0.x:
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/cycle/-/cycle-1.0.3.tgz#21e80b2be8580f98b468f379430662b046c34ad2"
 
-debug@2.6.9, debug@^2.1.2, debug@~2.6.9:
+debug@2.6.9, debug@^2.1.2:
   version "2.6.9"
   resolved "https://registry.yarnpkg.com/debug/-/debug-2.6.9.tgz#5d128515df134ff327e90a4c93f4e077a536341f"
   dependencies:
@@ -338,9 +338,9 @@ detect-libc@^1.0.2:
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/detect-libc/-/detect-libc-1.0.3.tgz#fa137c4bd698edf55cd5cd02ac559f91a4c4ba9b"
 
-dotenv@^5.0.1:
-  version "5.0.1"
-  resolved "https://registry.yarnpkg.com/dotenv/-/dotenv-5.0.1.tgz#a5317459bd3d79ab88cff6e44057a6a3fbb1fcef"
+dotenv@^6.0.0:
+  version "6.0.0"
+  resolved "https://registry.yarnpkg.com/dotenv/-/dotenv-6.0.0.tgz#24e37c041741c5f4b25324958ebbc34bca965935"
 
 ecdsa-sig-formatter@1.0.10:
   version "1.0.10"
@@ -627,9 +627,9 @@ google-p12-pem@^1.0.0:
     node-forge "^0.7.4"
     pify "^3.0.0"
 
-googleapis@^31.0.2:
-  version "31.0.2"
-  resolved "https://registry.yarnpkg.com/googleapis/-/googleapis-31.0.2.tgz#03266287c8b52681e4311a28d9ff2d800e8f1afb"
+googleapis@^32.0.0:
+  version "32.0.0"
+  resolved "https://registry.yarnpkg.com/googleapis/-/googleapis-32.0.0.tgz#04795d1956568546bb3e3cca3cae29a759326493"
   dependencies:
     google-auth-library "^1.4.0"
     pify "^3.0.0"
