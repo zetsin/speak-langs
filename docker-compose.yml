@@ -55,4 +55,3 @@ services:
       ME_CONFIG_BASICAUTH_PASSWORD: password
     depends_on:
       - mongo
-      
